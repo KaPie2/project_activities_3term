@@ -10,11 +10,15 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
 import { styles } from "../app/style_template";
 import { db } from "../config/firebase";
 
 
 export default function RegistrationScreen()  {
+    // Хук useRouter предоставляет методы для программной навигации
+    // Позволяет переходить между экранами без использования компонентов навигации
+    const router = useRouter();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,42 +31,50 @@ export default function RegistrationScreen()  {
 
         if (!name || !email || !password || !passwordConfirm) {
             Alert.alert("Ошибка", "Заполните все поля");
+            setLoading(false);
             return;
         }
 
         if (password !== passwordConfirm) {
             Alert.alert("Ошибка", "Пароли не совпадают");
+            setLoading(false);
             return;
         }
 
         const docRef = await addDoc(collection(db, 'users'), {
-        name: name,
-        email: email,
-        password: password,
-        
+            name: name,
+            email: email,
+            password: password,
+            // Флаг указывающий, что профиль не заполнен полностью
+            // После регистрации пользователь будет перенаправлен на экран заполнения профиля
+            profileCompleted: false,
         });
 
         console.log("User added with ID: ", docRef.id);
 
 
         Alert.alert("Успех!", "Пользователь успешно зарегистрирован");
-
-        setName("");
-        setEmail("");
-        setPassword("");
-        setPasswordConfirm("");
+        // Перенаправление на экран заполнения профиля после успешной регистрации
+        // replace очищает историю навигации, чтобы пользователь не мог вернуться назад к регистрации
+        router.push({
+            pathname: '/profile-setup',
+            params: { email: email } // ← ПЕРЕДАЕМ EMAIL
+        });
 
         setLoading(false);
-
     };
 
+    // Функция для перехода на экран входа
+    const handleGoToLogin = () => {
+        router.push('/login'); // или router.navigate('/login')
+    };
 
     return (
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <ScrollView contentContainerStyle={[styles.scrollContainer, { paddingBottom: 50 }]}>
 
                 <Text style={styles.title}>Регистрация</Text>
 
@@ -116,7 +128,10 @@ export default function RegistrationScreen()  {
                 </TouchableOpacity>
 
                 <Text style={styles.footerText}>
-                    Уже есть аккаунт? <Text style={styles.link}>Войдите</Text>
+                    Уже есть аккаунт? {' '}
+                    <Text style={styles.link} onPress={handleGoToLogin}>
+                        Войдите
+                    </Text>
                 </Text>
 
             </ScrollView>

@@ -1,12 +1,36 @@
 // app/index.tsx
-import { Href, Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Href, Link, useRouter } from 'expo-router';
+import { useAuth } from '../hooks/useAuth';
+import { useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 
 export default function HomeScreen() {
   const testPages: { name: string; href: Href }[] = [
     { name: 'Регистрация', href: '/registration' },
     { name: 'Вход', href: '../login' },
   ];
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
+
+  useEffect(() => {
+    // Если пользователь уже авторизован, перенаправляем его
+    if (isAuthenticated) {
+      if (user?.profileCompleted) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/profile-setup');
+      }
+    }
+  }, [isAuthenticated]);
+
+  // Если проверка еще не завершена, показываем загрузку
+  if (isAuthenticated === null) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

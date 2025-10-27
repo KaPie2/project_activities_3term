@@ -1,3 +1,4 @@
+import { useAuth } from '../hooks/useAuth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useState } from 'react';
 import {
@@ -10,15 +11,20 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
 import { styles } from "../app/style_template";
 import { db } from "../config/firebase";
 
 
 export default function LoginScreen() {
+    // Хук useRouter предоставляет методы для программной навигации
+    // Позволяет переходить между экранами без использования компонентов навигации
+    const router = useRouter();
+    const { login } = useAuth(); // ← Используем хук
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleRegister = async() => {
+    const handleLogin = async() => {
         const q = query(collection(db, "users"), where("email", "==", email));
 
         const q_snap = await getDocs(q);
@@ -34,8 +40,26 @@ export default function LoginScreen() {
             return;
         }
 
+        await login({
+            id: q_snap.docs[0].id,
+            email: userData.email,
+            name: userData.name,
+            profileCompleted: userData.profileCompleted
+        });
+
         Alert.alert("Успех", "Вход успешно выполнен");
+
+        if (userData.profileCompleted) {
+            router.replace('/(tabs)');
+        } else {
+            router.replace('/profile-setup');
+        }
     }
+
+    // Функция для перехода на экран регистрации
+    const handleGoToRegistration = () => {
+        router.push('/registration'); // или router.navigate('/login')
+    };
 
     return (<KeyboardAvoidingView
             style={styles.container}
@@ -71,9 +95,16 @@ export default function LoginScreen() {
 
             
 
-                <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Войти</Text>
                 </TouchableOpacity>
+
+                <Text style={styles.footerText}>
+                    Ещё нет аккаунта? {' '}
+                    <Text style={styles.link} onPress={handleGoToRegistration}>
+                        Зарегистрироваться
+                    </Text>
+                </Text>
 
 
             </ScrollView>
