@@ -1,4 +1,4 @@
-import { useAuth } from '../hooks/useAuth';
+import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useState } from 'react';
 import {
@@ -11,9 +11,9 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
 import { styles } from "../app/style_template";
 import { db } from "../config/firebase";
+import { useAuth } from '../hooks/useAuth';
 
 
 export default function LoginScreen() {
@@ -33,6 +33,8 @@ export default function LoginScreen() {
             Alert.alert("Ошибка", "Пользователь не найден");
             return;
         }
+
+        
 
         const userData = q_snap.docs[0].data();
         if (userData.password != password){

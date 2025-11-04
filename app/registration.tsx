@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
 import { addDoc, collection } from 'firebase/firestore';
 import { useState } from 'react';
 import {
@@ -10,7 +11,6 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
 import { styles } from "../app/style_template";
 import { db } from "../config/firebase";
 
@@ -49,6 +49,14 @@ export default function RegistrationScreen()  {
             // После регистрации пользователь будет перенаправлен на экран заполнения профиля
             profileCompleted: false,
         });
+
+        const profileData = await addDoc(collection(db, "profile"), {
+            email: email,
+            name: null,
+            faculty: null,
+            skills: null,
+            bio: null,
+        })
 
         console.log("User added with ID: ", docRef.id);
 
