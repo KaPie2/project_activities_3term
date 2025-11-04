@@ -1,6 +1,6 @@
-import { useAuth } from '../hooks/useAuth';
 import { Stack } from "expo-router";
-import { View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { useAuth } from '../hooks/useAuth';
 
 function RootLayoutContent() {
   const { isAuthenticated, user } = useAuth();
@@ -17,6 +17,7 @@ function RootLayoutContent() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="swipe" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ title: "Вход" }} />
       <Stack.Screen name="registration" options={{ title: "Регистрация" }} />

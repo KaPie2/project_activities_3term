@@ -1,13 +1,9 @@
-import { Href, Link, useRouter } from 'expo-router';
-import { useAuth } from '../hooks/useAuth';
+import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { useAuth } from '../hooks/useAuth';
 
 export default function HomeScreen() {
-  const testPages: { name: string; href: Href }[] = [
-    { name: 'Регистрация', href: '/registration' },
-    { name: 'Вход', href: '../login' },
-  ];
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
 
@@ -19,6 +15,9 @@ export default function HomeScreen() {
       } else {
         router.replace('/profile-setup');
       }
+    } else if (isAuthenticated === false) {
+      // Если пользователь не авторизован - отправляем на welcome
+      router.replace('/welcome');
     }
   }, [isAuthenticated]);
 
@@ -31,73 +30,20 @@ export default function HomeScreen() {
     );
   }
 
+  // Этот return больше не показывается, так как есть редирект
+  // Но оставляем его для TypeScript
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🧪 Меню тестирования</Text>
-      <Text style={styles.subtitle}>Выберите страницу для тестирования:</Text>
-      
-      <ScrollView style={styles.menuContainer}>
-        {testPages.map((page, index) => (
-          <Link key={index} href={page.href} asChild>
-            <TouchableOpacity style={styles.menuButton}>
-              <Text style={styles.menuButtonText}>{page.name}</Text>
-            </TouchableOpacity>
-          </Link>
-        ))}
-      </ScrollView>
-
-      
+      <ActivityIndicator size="large" />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 20,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    backgroundColor: '#FFFFFF',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 50,
-    marginBottom: 10,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#666',
-  },
-  menuContainer: {
-    flex: 1,
-  },
-  menuButton: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  menuButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
-  },
-  footer: {
-    textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 20,
-    color: '#999',
-    fontSize: 14,
-  },
-});
+};
