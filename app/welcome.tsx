@@ -1,4 +1,5 @@
 import { useFonts } from 'expo-font';
+import { LinearGradient } from 'expo-linear-gradient'; // ← ИЗМЕНИТЕ ИМПОРТ
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -78,13 +79,18 @@ export default function WelcomeScreen() {
     <View style={styles.featureCard}>
       <View style={styles.featureContent}>
         <View style={styles.iconWrapper}>
-          <View style={styles.gradientIcon}>
+          <LinearGradient
+            colors={['#64A2F7', '#E7499A']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientIcon}
+          >
             <Image 
               source={feature.icon} 
               style={styles.iconImage}
               resizeMode="contain"
             />
-          </View>
+          </LinearGradient>
         </View>
 
         <View style={styles.textWrapper}>
@@ -199,12 +205,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(100, 162, 247, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#64A2F7',
   },
   iconImage: {
     width: 20, 
