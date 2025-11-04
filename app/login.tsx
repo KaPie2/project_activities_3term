@@ -52,7 +52,7 @@ export default function LoginScreen() {
         Alert.alert("Успех", "Вход успешно выполнен");
 
         if (userData.profileCompleted) {
-            router.replace('/(tabs)');
+            router.replace('/swipe');
         } else {
             router.replace('/profile-setup');
         }

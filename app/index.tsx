@@ -1,4 +1,3 @@
-// app/index.tsx
 import { Href, Link, useRouter } from 'expo-router';
 import { useAuth } from '../hooks/useAuth';
 import { useEffect } from 'react';
@@ -16,7 +15,7 @@ export default function HomeScreen() {
     // Если пользователь уже авторизован, перенаправляем его
     if (isAuthenticated) {
       if (user?.profileCompleted) {
-        router.replace('/(tabs)');
+        router.replace('/swipe');
       } else {
         router.replace('/profile-setup');
       }

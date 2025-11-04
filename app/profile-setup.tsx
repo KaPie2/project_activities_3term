@@ -59,7 +59,7 @@ export default function ProfileSetupScreen() {
         });
 
         Alert.alert("Успех!", "Профиль успешно сохранен");
-        router.replace('/(tabs)');
+        router.replace('/swipe');
 
       // // 1. Находим пользователя по email
       // const q = query(collection(db, "users"), where("email", "==", userEmail));
