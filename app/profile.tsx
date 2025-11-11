@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -40,22 +40,28 @@ export default function ProfileScreen() {
   }, [user]);
 
   const loadUserProfile = async () => {
-    if (!user?.id) return;
+    if (!user?.email) return;
 
     try {
-      const userDoc = await getDoc(doc(db, 'users', user.id));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
+      // Ищем профиль по email в коллекции profile
+      const profilesQuery = query(collection(db, "profile"), where("email", "==", user.email));
+      const profilesSnapshot = await getDocs(profilesQuery);
+      
+      if (!profilesSnapshot.empty) {
+        const profileData = profilesSnapshot.docs[0].data();
         setProfile({
-          id: userDoc.id,
-          name: userData.name || '',
-          email: userData.email || '',
-          faculty: userData.faculty || '',
-          skills: userData.skills || [],
-          bio: userData.bio || '',
-          profileCompleted: userData.profileCompleted || false,
-          avatar: userData.avatar,
+          id: profilesSnapshot.docs[0].id, // ID документа из коллекции profile
+          name: profileData.name || '',
+          email: profileData.email || '',
+          faculty: profileData.faculty || '',
+          skills: profileData.skills || [],
+          bio: profileData.bio || '',
+          profileCompleted: true, // если профиль найден - значит заполнен
+          avatar: profileData.avatar,
         });
+      } else {
+        // Если профиль не найден
+        setProfile(null);
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -88,7 +94,7 @@ export default function ProfileScreen() {
   };
 
   const handleBack = () => {
-    router.back();
+    router.replace('/swipe');
   };
 
   if (loading) {

@@ -29,27 +29,40 @@ export default function ProfileSetupScreen() {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    // Если пользователь уже авторизован, загружаем его данные для редактирования
-    if (user && user.profileCompleted) {
+    if (userEmail) {
+    console.log('Режим СОЗДАНИЯ - из регистрации');
+    setIsEditing(false);
+    return;
+    } 
+    // Если пользователь авторизован но профиль не заполнен - создание
+    if (user && !user.profileCompleted) {
+      console.log('Режим СОЗДАНИЯ - пользователь есть, но профиль не заполнен');
+      setIsEditing(false);
+      return;
+    }
+    // Если пользователь уже авторизован и профиль заполнен - редактирование
+    else if (user && user.profileCompleted) {
+      console.log('Режим РЕДАКТИРОВАНИЯ - профиль заполнен');
       loadUserProfile();
       setIsEditing(true);
-    } else if (userEmail) {
-      // Если перешли из регистрации с email
-      setIsEditing(false);
+      return;
     }
   }, [user, userEmail]);
 
   const loadUserProfile = async () => {
-    if (!user?.id) return;
+    if (!user?.email) return;
 
     try {
-      const userDoc = await getDoc(doc(db, 'users', user.id));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setName(userData.name || '');
-        setFaculty(userData.faculty || '');
-        setSkills(userData.skills ? userData.skills.join(', ') : '');
-        setBio(userData.bio || '');
+      // Загружаем данные из коллекции profile (откуда будем сохранять)
+      const profilesQuery = query(collection(db, "profile"), where("email", "==", user.email));
+      const profilesSnapshot = await getDocs(profilesQuery);
+      
+      if (!profilesSnapshot.empty) {
+        const profileData = profilesSnapshot.docs[0].data();
+        setName(profileData.name || '');
+        setFaculty(profileData.faculty || '');
+        setSkills(profileData.skills ? profileData.skills.join(', ') : '');
+        setBio(profileData.bio || '');
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -67,87 +80,80 @@ export default function ProfileSetupScreen() {
 
     try {
       // РЕЖИМ РЕДАКТИРОВАНИЯ - пользователь уже существует
-      if (isEditing && user?.id) {
-        const userRef = doc(db, 'users', user.id);
+      if (isEditing && user?.email) {
+        // 1. Находим профиль пользователя по email
+        const profilesQuery = query(collection(db, "profile"), where("email", "==", user.email));
+        const profilesSnapshot = await getDocs(profilesQuery);
         
-        await updateDoc(userRef, {
+        if (profilesSnapshot.empty) {
+          Alert.alert("Ошибка", "Профиль не найден");
+          return;
+        }
+
+        const profileDoc = profilesSnapshot.docs[0];
+      
+        // 2. Обновляем данные в коллекции profile
+        await updateDoc(profileDoc.ref, {
           name: name,
           faculty: faculty,
           skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
           bio: bio,
-          profileCompleted: true,
           updatedAt: new Date().toISOString(),
         });
 
-        // Обновляем сессию
+        // 3. Обновляем сессию
         await login({
           id: user.id,
           email: user.email,
-          name: name,
           profileCompleted: true
         });
 
         Alert.alert("Успех!", "Профиль успешно обновлен");
         router.replace('/profile'); // Возвращаем в профиль
-
       } 
       // РЕЖИМ СОЗДАНИЯ - новый пользователь из регистрации
-      else if (userEmail) {
+      else if (!isEditing) {
         // 1. Находим пользователя по email
-        const q = query(collection(db, "users"), where("email", "==", userEmail));
-        const querySnapshot = await getDocs(q);
+        const usersQuery = query(collection(db, "users"), where("email", "==", userEmail));
+        const usersSnapshot = await getDocs(usersQuery);
             
-        if (querySnapshot.empty) {
-          Alert.alert("Ошибка", "Пользователь не найден");
-          return;
+        if (usersSnapshot.empty) {
+            Alert.alert("Ошибка", "Пользователь не найден");
+            return;
         }
 
-        const userDoc = querySnapshot.docs[0];
-            
-        // 2. ОБНОВЛЯЕМ существующего пользователя
+        const userDoc = usersSnapshot.docs[0];
+        
+        // 2. Находим профиль по email
+        const profilesQuery = query(collection(db, "profile"), where("email", "==", userEmail));
+        const profilesSnapshot = await getDocs(profilesQuery);
+        const profileDoc = profilesSnapshot.docs[0];
+
+        // 3. Обновляем профиль
+        await updateDoc(profileDoc.ref, {
+            name: name,
+            faculty: faculty,
+            skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
+            bio: bio,
+            updatedAt: new Date().toISOString(),
+        });
+
+        // 4. Обновляем пользователя - устанавливаем profileCompleted: true
         await updateDoc(userDoc.ref, {
-          name: name,
-          faculty: faculty,
-          skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
-          bio: bio,
-          profileCompleted: true,
-          updatedAt: new Date().toISOString(),
+            profileCompleted: true, // ← меняем на TRUE
+            updatedAt: new Date().toISOString(),
         });
 
-        // 3. ОБНОВЛЯЕМ СЕССИЮ!
+        // 5. Обновляем сессию
         await login({
-          id: userDoc.id,
-          email: userEmail,
-          name: name,
-          profileCompleted: true
+            id: userDoc.id,
+            email: userEmail,
+            profileCompleted: true // ← И в сессии тоже
         });
 
         Alert.alert("Успех!", "Профиль успешно сохранен");
         router.replace('/swipe');
       }
-      // РЕЗЕРВНЫЙ ВАРИАНТ (временный код)
-      else {
-        const docRef = await addDoc(collection(db, 'users'), {
-          name: name,
-          email: "temp@example.com",
-          faculty: faculty,
-          skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
-          bio: bio,
-          profileCompleted: true,
-          createdAt: new Date().toISOString(),
-        });
-
-        await login({
-          id: docRef.id,
-          email: "temp@example.com",
-          name: name,
-          profileCompleted: true
-        });
-
-        Alert.alert("Успех!", "Профиль успешно сохранен");
-        router.replace('/swipe');
-      }
-    
     } catch (error) {
       console.error("Error saving profile:", error);
       Alert.alert("Ошибка", "Не удалось сохранить профиль");
