@@ -67,6 +67,8 @@ export default function RegistrationScreen()  {
                 faculty: null,
                 skills: null,
                 bio: null,
+                likes: null,
+                dislikes: null,
                 createdAt: new Date().toISOString(),
             })
 
