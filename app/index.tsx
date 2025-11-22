@@ -11,13 +11,13 @@ export default function HomeScreen() {
     // Если пользователь уже авторизован, перенаправляем его
     if (isAuthenticated) {
       if (user?.profileCompleted) {
-        router.replace('/swipe');
+        router.replace('./swipe');
       } else {
         router.replace('/profile-setup');
       }
     } else if (isAuthenticated === false) {
       // Если пользователь не авторизован - отправляем на welcome
-      router.replace('/welcome');
+      router.replace('./welcome');
     }
   }, [isAuthenticated]);
 

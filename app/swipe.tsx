@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function SwipeScreen() {
   const router = useRouter();
@@ -11,7 +11,7 @@ export default function SwipeScreen() {
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.iconButton}
-          onPress={() => router.push('/chats')}
+          onPress={() => router.push('./chats')}
         >
           <Ionicons name="chatbubble-outline" size={24} color="black" />
         </TouchableOpacity>
@@ -20,7 +20,7 @@ export default function SwipeScreen() {
         
         <TouchableOpacity 
           style={styles.iconButton}
-          onPress={() => router.push('/profile')}
+          onPress={() => router.push('./profile')}
         >
           <Ionicons name="menu-outline" size={24} color="black" />
         </TouchableOpacity>

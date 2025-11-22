@@ -1,19 +1,17 @@
-import { addDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 import { styles } from "../app/style_template";
 import { db } from "../config/firebase";
+import { useAuth } from '../hooks/useAuth';
 
 
 export default function ProfileSetupScreen() {
@@ -31,6 +29,11 @@ export default function ProfileSetupScreen() {
   const handleSaveProfile = async () => {
     setLoading(true);
 
+    const q = query(collection(db, "profile"), where("email", "==", userEmail));
+    const q_snap = await getDocs(q);
+    const userDoc = q_snap.docs[0];
+    
+
     if (!name || !faculty) {
       Alert.alert("Ошибка", "Заполните обязательные поля: имя и факультет");
       setLoading(false);
@@ -38,28 +41,24 @@ export default function ProfileSetupScreen() {
     }
 
     try {
-      // ⬇️⬇️⬇️ ВРЕМЕННОЕ РЕШЕНИЕ ⬇️⬇️⬇️
-        // Создаем нового пользователя (как было раньше)
-        const docRef = await addDoc(collection(db, 'users'), {
-            name: name,
-            email: "temp@example.com", // временный email
-            faculty: faculty,
-            skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
-            bio: bio,
-            profileCompleted: true,
-            createdAt: new Date().toISOString(),
+      
+        await updateDoc(userDoc.ref, {
+          name: name,
+          faculty: faculty,
+          skills: skills,
+          bio: bio,
         });
 
         // Сохраняем в сессию
         await login({
-            id: docRef.id,
+            id: userDoc.id,
             email: "temp@example.com",
             name: name,
             profileCompleted: true
         });
 
         Alert.alert("Успех!", "Профиль успешно сохранен");
-        router.replace('/swipe');
+        router.replace('./swipe');
 
       // // 1. Находим пользователя по email
       // const q = query(collection(db, "users"), where("email", "==", userEmail));

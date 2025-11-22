@@ -52,12 +52,12 @@ export default function LoginScreen() {
         Alert.alert("Успех", "Вход успешно выполнен");
 
         if (userData.profileCompleted) {
-            router.replace('/swipe');
+            router.replace('./swipe');
         } else {
             router.replace('/profile-setup');
         }
     }
-
+  
     // Функция для перехода на экран регистрации
     const handleGoToRegistration = () => {
         router.push('/registration'); // или router.navigate('/login')

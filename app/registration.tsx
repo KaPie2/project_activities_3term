@@ -72,9 +72,9 @@ export default function RegistrationScreen()  {
         setLoading(false);
     };
 
-    // Функция для перехода на экран входа
+    
     const handleGoToLogin = () => {
-        router.push('/login'); // или router.navigate('/login')
+        router.push('/login');
     };
 
     return (
