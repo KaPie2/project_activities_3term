@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { useState } from 'react';
 import {
     Alert,
@@ -19,7 +19,6 @@ export default function RegistrationScreen()  {
     // Хук useRouter предоставляет методы для программной навигации
     // Позволяет переходить между экранами без использования компонентов навигации
     const router = useRouter();
-    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("")
@@ -29,7 +28,7 @@ export default function RegistrationScreen()  {
     const handleRegister = async() => {
         setLoading(true);
 
-        if (!name || !email || !password || !passwordConfirm) {
+        if (!email || !password || !passwordConfirm) {
             Alert.alert("Ошибка", "Заполните все поля");
             setLoading(false);
             return;
@@ -41,35 +40,53 @@ export default function RegistrationScreen()  {
             return;
         }
 
-        const docRef = await addDoc(collection(db, 'users'), {
-            name: name,
-            email: email,
-            password: password,
-            // Флаг указывающий, что профиль не заполнен полностью
-            // После регистрации пользователь будет перенаправлен на экран заполнения профиля
-            profileCompleted: false,
-        });
+        try {
+            // Проверяем, существует ли пользователь с таким email
+            const usersQuery = query(collection(db, "users"), where("email", "==", email.trim()));
+            const usersSnapshot = await getDocs(usersQuery);
+            
+            if (!usersSnapshot.empty) {
+                Alert.alert("Ошибка", "Пользователь с таким email уже существует");
+                setLoading(false);
+                return;
+            }
 
-        const profileData = await addDoc(collection(db, "profile"), {
-            email: email,
-            name: null,
-            faculty: null,
-            skills: null,
-            bio: null,
-        })
+            // Создаем пользователя
+            const docRef = await addDoc(collection(db, 'users'), {
+                email: email,
+                password: password,
+                // Флаг указывающий, что профиль не заполнен полностью
+                // После регистрации пользователь будет перенаправлен на экран заполнения профиля
+                profileCompleted: false,
+            });
 
-        console.log("User added with ID: ", docRef.id);
+            // Создаем пустой профиль
+            await addDoc(collection(db, "profile"), {
+                email: email,
+                name: null,
+                faculty: null,
+                skills: null,
+                bio: null,
+                likes: null,
+                dislikes: null,
+                createdAt: new Date().toISOString(),
+            })
 
+            console.log("User added with ID: ", docRef.id);
 
-        Alert.alert("Успех!", "Пользователь успешно зарегистрирован");
-        // Перенаправление на экран заполнения профиля после успешной регистрации
-        // replace очищает историю навигации, чтобы пользователь не мог вернуться назад к регистрации
-        router.push({
-            pathname: '/profile-setup',
-            params: { email: email } // ← ПЕРЕДАЕМ EMAIL
-        });
-
-        setLoading(false);
+            Alert.alert("Успех!", "Пользователь успешно зарегистрирован");
+            // Перенаправление на экран заполнения профиля после успешной регистрации
+            // replace очищает историю навигации, чтобы пользователь не мог вернуться назад к регистрации
+            router.push({
+                pathname: '/profile-setup',
+                params: { email: email } // ← ПЕРЕДАЕМ EMAIL
+            });
+        } catch (error) {
+            console.error("Registration error:", error);
+            Alert.alert("Ошибка", "Не удалось зарегистрировать пользователя");
+        } finally {
+            setLoading(false);
+        }
     };
 
     
@@ -85,17 +102,6 @@ export default function RegistrationScreen()  {
             <ScrollView contentContainerStyle={[styles.scrollContainer, { paddingBottom: 50 }]}>
 
                 <Text style={styles.title}>Регистрация</Text>
-
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Имя</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Введите ваше имя"
-                        value={name}
-                        onChangeText={setName}
-                        autoCapitalize="words"
-                    />
-                </View>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Email</Text>
