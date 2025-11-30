@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router'; // Импорт хука для навигации между экранами в Expo Router
-import { addDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { useState } from 'react';
 import {
     Alert,

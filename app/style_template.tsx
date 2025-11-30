@@ -6,7 +6,152 @@ import {
 const { width, height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
-    // === СУЩЕСТВУЮЩИЕ СТИЛИ ===
+    // === ОСНОВНЫЕ СТИЛИ ДЛЯ ЛОГИНА ===
+    loginContainer: {
+        flex: 1,
+        backgroundColor: 'transparent',
+    },
+
+    keyboardAvoidingView: {
+        flex: 1,
+        backgroundColor: 'transparent',
+    },
+
+    backgroundImage: {
+        position: 'absolute',
+        width: width,
+        height: height,
+        top: 0,
+        left: 0,
+    },
+    
+    loginContent: {
+        flex: 1,
+        paddingHorizontal: 20,
+        justifyContent: 'center',
+    },
+    
+    loginHeader: {
+        alignItems: 'center',
+        marginBottom: 40,
+    },
+    
+    logoContainer: {
+        width: 79,
+        height: 79,
+        borderRadius: 41.21,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    
+    logoIcon: {
+        width: 45.74,
+        height: 45.74,
+    },
+    
+    omstuConnectLogo: {
+        width: 299,
+        height: 33,
+        marginBottom: 10,
+    },
+
+    subtitleText: {
+        fontSize: 15,
+        color: '#585a89',
+        fontFamily: 'System',
+        fontWeight: '400',
+        marginTop: 5,
+    },
+    
+    loginForm: {
+        backgroundColor: 'rgba(49, 52, 86, 0.22)',
+        borderWidth: 1,
+        borderColor: '#585a89',
+        borderRadius: 10,
+        padding: 20,
+        marginBottom: 30,
+        marginTop: -10,
+    },
+    
+    inputWrapper: {
+        marginBottom: 25,
+    },
+    
+    inputLabel: {
+        color: '#ffffffde',
+        fontSize: 14,
+        fontFamily: 'System',
+        fontWeight: '500',
+        marginBottom: 8,
+    },
+    
+    textInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(49, 52, 86, 0.73)',
+        borderWidth: 1,
+        borderColor: '#585a89',
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        height: 42,
+    },
+    
+    textInputIcon: {
+        width: 17.92,
+        height: 14.58,
+        marginRight: 8,
+    },
+    
+    textInput: {
+        flex: 1,
+        color: '#ffffff',
+        fontSize: 14,
+        fontFamily: 'System',
+    },
+    
+    eyeButton: {
+        padding: 8,
+        marginLeft: 8,
+    },
+
+    eyeIcon: {
+        width: 20,
+        height: 20,
+    },
+    
+    forgotPassword: {
+        alignSelf: 'flex-end',
+        marginTop: -10,
+        marginBottom: 20,
+    },
+    
+    forgotPasswordText: {
+        color: '#4e9df7',
+        fontSize: 12,
+        fontFamily: 'System',
+        fontWeight: '500',
+    },
+    
+    footerContainer: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    
+    registerText: {
+        color: '#585a89',
+        fontSize: 13,
+        fontFamily: 'System',
+        textAlign: 'center',
+    },
+    
+    registerLink: {
+        color: '#E9499A',
+        fontWeight: '600',
+    },
+
+    // === ОБЩИЕ СТИЛИ ДЛЯ ФОРМ ===
     container: {
         flex: 1,
         backgroundColor: "#f5f5f5",
@@ -59,23 +204,23 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-  
-    footerText: {
-        textAlign: 'center',
-        marginTop: 20,
-        color: '#666',
-    },
-  
-    link: {
-        color: '#007AFF',
-        fontWeight: 'bold',
-    },
 
     buttonDisabled: {
         backgroundColor: '#cccccc',
     },
 
-    // === НОВЫЕ СТИЛИ ДЛЯ WELCOME-СТРАНИЦЫ ===
+    footerText: {
+        textAlign: 'center',
+        marginTop: 20,
+        color: '#666',
+    },
+
+    link: {
+        color: '#007AFF',
+        fontWeight: 'bold',
+    },
+
+    // === WELCOME СТИЛИ ===
     welcomeContainer: {
         flex: 1,
         backgroundColor: '#ffffff',
@@ -116,14 +261,6 @@ export const styles = StyleSheet.create({
         paddingVertical: 13,
     },
 
-    welcomeFirstCard: {
-        marginTop: -4.5,
-    },
-
-    welcomeLastCard: {
-        marginBottom: -4.5,
-    },
-
     welcomeFeatureContent: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -158,7 +295,7 @@ export const styles = StyleSheet.create({
     welcomeFeatureTitle: {
         color: '#C2D7FF',
         fontSize: 10,
-        fontFamily: 'PublicSans-Regular',
+        fontFamily: 'System',
         fontWeight: '400',
         lineHeight: 11,
         marginTop: -1,
@@ -167,7 +304,7 @@ export const styles = StyleSheet.create({
     welcomeFeatureDescription: {
         color: '#FFFFFF',
         fontSize: 10,
-        fontFamily: 'Poppins-Medium',
+        fontFamily: 'System',
         fontWeight: '500',
         lineHeight: 15,
     },
@@ -180,7 +317,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-    // === ДОПОЛНИТЕЛЬНЫЕ УНИВЕРСАЛЬНЫЕ СТИЛИ ===
+    // === ОБЩИЕ СТИЛИ ===
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',

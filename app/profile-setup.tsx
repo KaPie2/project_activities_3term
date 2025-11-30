@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
   Alert,

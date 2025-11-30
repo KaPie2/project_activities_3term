@@ -1,104 +1,135 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import {
-    Animated,
-    Dimensions,
-    Easing,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
-
-const { width } = Dimensions.get('window');
+import React, { useEffect, useRef } from 'react';
+import { ActivityIndicator, Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface GradientButtonProps {
   title: string;
   onPress: () => void;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
-export default function GradientButton({ title, onPress }: GradientButtonProps) {
-  const rotateAnim = React.useRef(new Animated.Value(0)).current;
+export default function GradientButton({ title, onPress, loading = false, disabled = false }: GradientButtonProps) {
+  const animation = useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
-    const animateGradient = () => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(rotateAnim, {
-            toValue: 1,
-            duration: 2000,
-            easing: Easing.linear,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    };
+  useEffect(() => {
+    if (disabled || loading) return;
 
-    animateGradient();
-  }, []);
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 4000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animation, {
+          toValue: 0,
+          duration: 4000,
+          useNativeDriver: true,
+        })
+      ])
+    ).start();
+  }, [disabled, loading]);
 
-  const rotateInterpolate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+  const opacity1 = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0, 1]
+  });
+
+  const opacity2 = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 1, 0]
   });
 
   return (
-    <TouchableOpacity 
-      style={styles.buttonContainer} 
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <Animated.View 
-        style={[
-          styles.gradientBackground,
-          {
-            transform: [{ rotate: rotateInterpolate }],
-          },
-        ]}
+    <View style={styles.shadowContainer}>
+      <TouchableOpacity 
+        onPress={onPress} 
+        disabled={disabled || loading}
+        style={styles.buttonContainer}
       >
-        <LinearGradient
-          colors={['#64A2F7', '#E7499A']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        />
-      </Animated.View>
-      <View style={styles.buttonInner}>
-        <Text style={styles.buttonText}>{title}</Text>
-      </View>
-    </TouchableOpacity>
+        <View style={[styles.gradientContainer, (disabled || loading) && styles.gradientDisabled]}>
+          <Animated.View style={[styles.gradientBase, { opacity: opacity1 }]}>
+            <LinearGradient
+              colors={['#64A2F7', '#E7499A']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
+          
+          <Animated.View style={[styles.gradientBase, { opacity: opacity2 }]}>
+            <LinearGradient
+              colors={['#E7499A', '#64A2F7']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
+          
+          <View style={styles.content}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.buttonText}>{title}</Text>
+            )}
+          </View>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  shadowContainer: {
+    width: '100%',
+    // Тень для iOS
+    shadowColor: '#010124',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    // Тень для Android
+    elevation: 4,
+    borderRadius: 60,
+    // Убираем белый фон, вместо этого используем прозрачный
+    backgroundColor: 'transparent',
+  },
   buttonContainer: {
     width: '100%',
-    height: 50,
-    borderRadius: 10,
+    borderRadius: 60,
     overflow: 'hidden',
+    height: 50,
   },
-  gradientBackground: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-  },
-  gradient: {
-    width: '100%',
-    height: '100%',
-  },
-  buttonInner: {
+  gradientContainer: {
     flex: 1,
-    backgroundColor: 'rgba(48, 51, 85, 0.9)',
-    margin: 2,
-    borderRadius: 8,
-    justifyContent: 'center',
+    position: 'relative',
+    borderRadius: 60,
+  },
+  gradientBase: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    right: -10,
+    bottom: -10,
+    borderRadius: 70,
+  },
+  content: {
+    flex: 1,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#575A89',
+    justifyContent: 'center',
+    position: 'relative',
+    zIndex: 1,
+    borderRadius: 60,
+  },
+  gradientDisabled: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
 });

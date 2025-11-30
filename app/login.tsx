@@ -1,31 +1,54 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Alert,
+    Image,
     KeyboardAvoidingView,
     Platform,
-    ScrollView,
+    SafeAreaView,
+    StatusBar,
     Text,
     TextInput,
     TouchableOpacity,
     View
 } from 'react-native';
-import { styles } from "../app/style_template";
 import { db } from "../config/firebase";
 import { useAuth } from '../hooks/useAuth';
+import GradientButton from './components/GradientButton';
+import { styles } from "./style_template";
+
+// Импортируем изображения
+const backgroundImage = require('../assets/images/welcome/background.png');
+const emailIcon = require('../assets/images/login/email_icon.png');
+const lockIcon = require('../assets/images/login/lock_icon.png');
+const openEyeIcon = require('../assets/images/login/open_eye.png');
+const closeEyeIcon = require('../assets/images/login/close_eye.png');
+const logoIcon = require('../assets/images/login/dev_icon.png');
+const omstuConnectLogo = require('../assets/images/login/omstu-connect.png'); // Добавляем логотип
 
 export default function LoginScreen() {
     const router = useRouter();
     const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        // Убрали SplashScreen.hideAsync() - это было проблемой
+    }, []);
+
     const handleLogin = async () => {
-        // Валидация полей
         if (!email.trim() || !password.trim()) {
             Alert.alert("Ошибка", "Заполните все поля");
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) {
+            Alert.alert("Ошибка", "Введите корректный email адрес");
             return;
         }
 
@@ -35,25 +58,21 @@ export default function LoginScreen() {
             const q = query(collection(db, "users"), where("email", "==", email.trim()));
             const q_snap = await getDocs(q);
 
-            // Проверяем, есть ли пользователь с таким email
             if (q_snap.empty) {
                 Alert.alert("Ошибка", "Пользователь не найден");
                 setLoading(false);
                 return;
             }
 
-            // Получаем данные первого найденного пользователя
             const userDoc = q_snap.docs[0];
             const userData = userDoc.data();
 
-            // Проверяем пароль
             if (userData.password !== password) {
                 Alert.alert("Ошибка", "Пароль неверный");
                 setLoading(false);
                 return;
             }
 
-            // Логиним пользователя
             await login({
                 id: userDoc.id,
                 email: userData.email,
@@ -63,7 +82,6 @@ export default function LoginScreen() {
 
             Alert.alert("Успех", "Вход успешно выполнен");
 
-            // Перенаправляем в зависимости от заполненности профиля
             if (userData.profileCompleted) {
                 router.replace('/swipe');
             } else {
@@ -82,58 +100,136 @@ export default function LoginScreen() {
         router.push('/registration');
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <SafeAreaView style={styles.loginContainer}>
+            <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+            
+            {/* Background Image */}
+            <Image 
+                source={backgroundImage} 
+                style={styles.backgroundImage}
+                resizeMode="cover"
+            />
+            
+            <KeyboardAvoidingView
+                style={styles.keyboardAvoidingView}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <View style={styles.loginContent}>
+                    <View style={styles.loginHeader}>
+                        <LinearGradient
+                            colors={['#64A2F7', '#E7499A']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.logoContainer}
+                        >
+                            <Image 
+                                source={logoIcon}
+                                style={styles.logoIcon}
+                                resizeMode="contain"
+                            />
+                        </LinearGradient>
+                        
+                        {/* Заменяем текст на картинку с логотипом */}
+                        <Image 
+                            source={omstuConnectLogo}
+                            style={styles.omstuConnectLogo}
+                            resizeMode="contain"
+                        />
+                        
+                        <Text style={styles.subtitleText}>
+                            Войдите в свой аккаунт
+                        </Text>
+                    </View>
 
-                <Text style={styles.title}>Вход в аккаунт</Text>
+                    {/* Форма с email и паролем */}
+                    <View style={styles.loginForm}>
+                        <View style={styles.inputWrapper}>
+                            <Text style={styles.inputLabel}>Email</Text>
+                            <View style={styles.textInputContainer}>
+                                <Image 
+                                    source={emailIcon}
+                                    style={styles.textInputIcon}
+                                    resizeMode="contain"
+                                />
+                                <TextInput
+                                    style={styles.textInput}
+                                    placeholder="your.email@omstu.ru"
+                                    placeholderTextColor="#585a89"
+                                    value={email}
+                                    onChangeText={setEmail}
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    autoComplete="email"
+                                    editable={!loading}
+                                />
+                            </View>
+                        </View>
 
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Введите ваш email"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType='email-address'
-                        autoCapitalize="none"
-                        editable={!loading}
+                        <View style={styles.inputWrapper}>
+                            <Text style={styles.inputLabel}>Пароль</Text>
+                            <View style={styles.textInputContainer}>
+                                <Image 
+                                    source={lockIcon}
+                                    style={styles.textInputIcon}
+                                    resizeMode="contain"
+                                />
+                                <TextInput
+                                    style={styles.textInput}
+                                    placeholder="**********"
+                                    placeholderTextColor="#585a89"
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    secureTextEntry={!showPassword}
+                                    autoCapitalize="none"
+                                    autoComplete="password"
+                                    editable={!loading}
+                                />
+                                <TouchableOpacity 
+                                    onPress={togglePasswordVisibility}
+                                    style={styles.eyeButton}
+                                >
+                                    <Image 
+                                        source={showPassword ? closeEyeIcon : openEyeIcon}
+                                        style={styles.eyeIcon}
+                                        resizeMode="contain"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity style={styles.forgotPassword}>
+                            <Text style={styles.forgotPasswordText}>
+                                Забыли пароль?
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Кнопка ВОЙТИ */}
+                    <GradientButton
+                        title="Войти"
+                        onPress={handleLogin}
+                        loading={loading}
+                        disabled={loading}
                     />
+
+                    <View style={styles.footerContainer}>
+                        <Text style={styles.registerText}>
+                            Нет аккаунта?{' '}
+                            <Text 
+                                style={styles.registerLink}
+                                onPress={handleGoToRegistration}
+                            >
+                                Зарегистрироваться
+                            </Text>
+                        </Text>
+                    </View>
                 </View>
-
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Пароль</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Введите пароль"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                        editable={!loading}
-                    />
-                </View>
-
-                <TouchableOpacity 
-                    style={[styles.button, loading && styles.buttonDisabled]} 
-                    onPress={handleLogin}
-                    disabled={loading}
-                >
-                    <Text style={styles.buttonText}>
-                        {loading ? "Вход..." : "Войти"}
-                    </Text>
-                </TouchableOpacity>
-
-                <Text style={styles.footerText}>
-                    Ещё нет аккаунта? {' '}
-                    <Text style={styles.link} onPress={handleGoToRegistration}>
-                        Зарегистрироваться
-                    </Text>
-                </Text>
-
-            </ScrollView>
-        </KeyboardAvoidingView>
-    )
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    );
 }
