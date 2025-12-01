@@ -27,3 +27,4 @@ function RootLayoutContent() {
     </Stack>
   );
 }
+export default RootLayoutContent;
