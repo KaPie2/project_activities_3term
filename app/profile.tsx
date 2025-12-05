@@ -24,7 +24,9 @@ interface UserProfile {
   email: string;
   faculty: string;
   skills: string[];
+  hobbies: string[];
   bio: string;
+  gender: string;
   profileCompleted: boolean;
   avatar?: string;
 }
@@ -55,7 +57,9 @@ export default function ProfileScreen() {
           email: profileData.email || '',
           faculty: profileData.faculty || '',
           skills: profileData.skills || [],
+          hobbies: profileData.hobbies || [],
           bio: profileData.bio || '',
+          gender: profileData.gender || '',
           profileCompleted: true, // если профиль найден - значит заполнен
           avatar: profileData.avatar,
         });
@@ -113,6 +117,14 @@ export default function ProfileScreen() {
     );
   }
 
+  const getGenderDisplayText = (gender: string) => {
+    switch (gender) {
+      case 'male': return 'Мужской';
+      case 'female': return 'Женский';
+      default: return 'Не указан';
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -149,6 +161,15 @@ export default function ProfileScreen() {
             <Text style={styles.infoValue}>{profile.faculty || 'Не указан'}</Text>
           </View>
 
+          {/* Gender */}
+          <View style={styles.infoCard}>
+            <View style={styles.infoHeader}>
+              <Ionicons name="male-female-outline" size={20} color="#007AFF" />
+              <Text style={styles.infoTitle}>Пол</Text>
+            </View>
+            <Text style={styles.infoValue}>{getGenderDisplayText(profile.gender)}</Text>
+          </View>
+
           {/* Skills */}
           <View style={styles.infoCard}>
             <View style={styles.infoHeader}>
@@ -165,6 +186,25 @@ export default function ProfileScreen() {
               </View>
             ) : (
               <Text style={styles.noInfoText}>Навыки не указаны</Text>
+            )}
+          </View>
+
+          {/* Hobbies */}
+          <View style={styles.infoCard}>
+            <View style={styles.infoHeader}>
+              <Ionicons name="heart-outline" size={20} color="#007AFF" />
+              <Text style={styles.infoTitle}>Увлечения</Text>
+            </View>
+            {profile.hobbies && profile.hobbies.length > 0 ? (
+              <View style={styles.skillsContainer}>
+                {profile.hobbies.map((hobby, index) => (
+                  <View key={index} style={styles.hobbyTag}>
+                    <Text style={styles.hobbyText}>{hobby}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.noInfoText}>Увлечения не указаны</Text>
             )}
           </View>
 
@@ -297,6 +337,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   skillText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+   hobbyTag: {
+    backgroundColor: '#34C759',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  hobbyText: {
     color: 'white',
     fontSize: 14,
     fontWeight: '500',

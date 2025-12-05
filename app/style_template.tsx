@@ -330,4 +330,39 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+
+    // === СТИЛИ ДЛЯ ПОЛЯ ПОЛ ===
+    genderContainer: {
+        flexDirection: 'row',
+        gap: 20,
+        marginTop: 5,
+    },
+
+    genderOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+
+    radioCircle: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#007AFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    radioSelected: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: '#007AFF',
+    },
+
+    genderLabel: {
+        fontSize: 16,
+        color: '#333',
+    }, 
 });

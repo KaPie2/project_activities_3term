@@ -24,7 +24,9 @@ export default function ProfileSetupScreen() {
   const [name, setName] = useState('');
   const [faculty, setFaculty] = useState('');
   const [skills, setSkills] = useState('');
+  const [hobbies, setHobbies] = useState('');
   const [bio, setBio] = useState('');
+  const [gender, setGender] = useState(''); 
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -62,7 +64,9 @@ export default function ProfileSetupScreen() {
         setName(profileData.name || '');
         setFaculty(profileData.faculty || '');
         setSkills(profileData.skills ? profileData.skills.join(', ') : '');
+        setHobbies(profileData.hobbies ? profileData.hobbies.join(', ') : '');
         setBio(profileData.bio || '');
+        setGender(profileData.gender || '');
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -72,8 +76,8 @@ export default function ProfileSetupScreen() {
   const handleSaveProfile = async () => {
     setLoading(true);
 
-    if (!name || !faculty) {
-      Alert.alert("Ошибка", "Заполните обязательные поля: имя и факультет");
+    if (!name || !faculty || !gender) {
+      Alert.alert("Ошибка", "Заполните обязательные поля: имя, факультет и пол");
       setLoading(false);
       return;
     }
@@ -97,7 +101,9 @@ export default function ProfileSetupScreen() {
           name: name,
           faculty: faculty,
           skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
+          hobbies: hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby !== ''),
           bio: bio,
+          gender: gender,
           updatedAt: new Date().toISOString(),
         });
 
@@ -134,7 +140,9 @@ export default function ProfileSetupScreen() {
             name: name,
             faculty: faculty,
             skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
+            hobbies: hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby !== ''),
             bio: bio,
+            gender: gender,
             updatedAt: new Date().toISOString(),
         });
 
@@ -202,6 +210,33 @@ export default function ProfileSetupScreen() {
         </View>
 
         <View style={styles.inputContainer}>
+          <Text style={styles.label}>Пол *</Text>
+          <View style={styles.genderContainer}>
+            {/* Мужской */}
+            <TouchableOpacity 
+              style={styles.genderOption}
+              onPress={() => setGender('male')}
+            >
+              <View style={styles.radioCircle}>
+                {gender === 'male' && <View style={styles.radioSelected} />}
+              </View>
+              <Text style={styles.genderLabel}>Мужской</Text>
+            </TouchableOpacity>
+    
+            {/* Женский */}
+            <TouchableOpacity 
+              style={styles.genderOption}
+              onPress={() => setGender('female')}
+            >
+              <View style={styles.radioCircle}>
+                {gender === 'female' && <View style={styles.radioSelected} />}
+              </View>
+              <Text style={styles.genderLabel}>Женский</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>Навыки</Text>
           <TextInput
             style={styles.input}
@@ -215,10 +250,23 @@ export default function ProfileSetupScreen() {
         </View>
 
         <View style={styles.inputContainer}>
+          <Text style={styles.label}>Увлечения</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Фотография, музыка, спорт, путешествия..."
+            value={hobbies}
+            onChangeText={setHobbies}
+          />
+          <Text style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
+            Перечислите увлечения через запятую
+          </Text>
+        </View>
+
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>О себе</Text>
           <TextInput
             style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-            placeholder="Расскажите о себе, каких партнеров ищете..."
+            placeholder="Расскажите немного о себе, своих интересах и целях..."
             value={bio}
             onChangeText={setBio}
             multiline

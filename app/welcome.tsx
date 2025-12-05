@@ -3,14 +3,14 @@ import { LinearGradient } from 'expo-linear-gradient'; // ← ИЗМЕНИТЕ �
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    ActivityIndicator,
-    Dimensions,
-    Image,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import GradientButton from './components/GradientButton';
 
