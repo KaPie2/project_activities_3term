@@ -24,7 +24,6 @@ function RootLayoutContent() {
       <Stack.Screen name="profile-setup" options={{ title: "Профиль" }} />
       <Stack.Screen name="profile" options={{ headerShown: false }} />
       <Stack.Screen name="chats" options={{ title: "Чаты" }} />
-      <Stack.Screen name="filters" options={{ headerShown: false }} />
     </Stack>
   );
 }
