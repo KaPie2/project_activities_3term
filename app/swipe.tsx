@@ -783,7 +783,7 @@ export default function SwipeScreen() {
       <View style={styles.container}>
         <View style={styles.bottomButtonsContainer}>
         {/* Кнопка слева - Чаты */}
-        <TouchableOpacity style={styles.sideButton} onPress={() => router.push('/login')}>
+        <TouchableOpacity style={styles.sideButton} onPress={() => router.push('/chats')}>
           <Ionicons name="chatbubble" size={24} color="#007AFF" />
           <Text style={styles.sideButtonText}>Чаты</Text>
         </TouchableOpacity>
@@ -863,7 +863,7 @@ export default function SwipeScreen() {
 
       <View style={styles.bottomButtonsContainer}>
         {/* Кнопка слева - Чаты */}
-        <TouchableOpacity style={styles.sideButton} onPress={() => router.push('/login')}>
+        <TouchableOpacity style={styles.sideButton} onPress={() => router.push('/chats')}>
           <Ionicons name="chatbubble" size={24} color="#007AFF" />
           <Text style={styles.sideButtonText}>Чаты</Text>
         </TouchableOpacity>
