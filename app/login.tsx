@@ -1,5 +1,7 @@
+// app/login.tsx
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
@@ -16,11 +18,11 @@ import {
 } from 'react-native';
 import { db } from "../config/firebase";
 import { useAuth } from '../hooks/useAuth';
+import BackgroundImage from './components/BackgroundImage';
 import GradientButton from './components/GradientButton';
 import { styles } from "./style_template";
 
 // Импортируем изображения
-const backgroundImage = require('../assets/images/welcome/background.png');
 const emailIcon = require('../assets/images/login/email_icon.png');
 const lockIcon = require('../assets/images/login/lock_icon.png');
 const openEyeIcon = require('../assets/images/login/open_eye.png');
@@ -37,7 +39,7 @@ export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Убрали SplashScreen.hideAsync() - это было проблемой
+        SplashScreen.hideAsync()
     }, []);
 
     const handleLogin = async () => {
@@ -109,11 +111,7 @@ export default function LoginScreen() {
             <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
             
             {/* Background Image */}
-            <Image 
-                source={backgroundImage} 
-                style={styles.backgroundImage}
-                resizeMode="cover"
-            />
+            <BackgroundImage/>
             
             <KeyboardAvoidingView
                 style={styles.keyboardAvoidingView}
