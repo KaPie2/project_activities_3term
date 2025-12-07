@@ -1,6 +1,6 @@
 import {
-    Dimensions,
-    StyleSheet
+  Dimensions,
+  StyleSheet
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -366,317 +366,777 @@ export const styles = StyleSheet.create({
         color: '#333',
     }, 
 
-// === СТИЛИ ДЛЯ ФИЛЬТРОВ (FILTERS) ===
+    // === СТИЛИ ДЛЯ ФИЛЬТРОВ (FILTERS) ===
 
-// Верхнее окошко с заголовком и кнопкой назад
-topHeader: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 88,
-  backgroundColor: 'rgba(0, 2, 10, 0.8)', // 00020A 80%
-  zIndex: 6, // Самый высокий zIndex
-  flexDirection: 'row',
-  alignItems: 'center',
-  paddingTop: 44, // Для статус бара
+    // Верхнее окошко с заголовком и кнопкой назад
+    topHeader: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 88,
+        backgroundColor: 'rgba(0, 2, 10, 0.8)', // 00020A 80%
+        zIndex: 6, // Самый высокий zIndex
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop: 44, // Для статус бара
+    },
+
+    // Кнопка назад
+    backButton: {
+        position: 'absolute',
+        left: 27,
+        top: 46,
+        zIndex: 7,
+    },
+
+    backButtonCircle: {
+        width: 35,
+        height: 35,
+        borderRadius: 17.5,
+        backgroundColor: 'rgba(49, 52, 86, 0.22)', // 313456 22%
+        borderWidth: 1.5,
+        borderColor: '#6472BD', // stroke 6472BD
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    backIcon: {
+        width: 19,
+        height: 11,
+        // tintColor удален, чтобы отображать оригинальный цвет изображения
+    },
+
+    // Заголовок "Критерии подбора"
+    headerTitle: {
+        position: 'absolute',
+        left: 116,
+        top: 52,
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+    },
+
+    filtersContainer: {
+        flex: 1,
+        backgroundColor: 'transparent',
+        position: 'relative',
+        zIndex: 3, // Контейнер поверх кругов
+    },
+
+    // Контейнер для фоновых кругов
+    filtersBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 2, // Круги поверх BackgroundImage
+    },
+
+    // Базовые стили для всех кругов
+    ellipse: {
+        position: 'absolute',
+        width: 400,
+        height: 400,
+        borderRadius: 200,
+        borderWidth: 2,
+        opacity: 0.8,
+    },
+
+    // Круг 1: x -141 y 750, fill 5B6288 20%, stroke 9CAAF4
+    ellipse1: {
+        left: -141,
+        top: 750,
+        backgroundColor: 'rgba(91, 98, 136, 0.2)', // 5B6288 20%
+        borderColor: '#9CAAF4',
+    },
+
+    // Круг 2: x -242 y 662, stroke 9CAAF4 (только обводка)
+    ellipse2: {
+        left: -242,
+        top: 662,
+        backgroundColor: 'transparent',
+        borderColor: '#9CAAF4',
+    },
+
+    // Круг 3: x 166 y -233, fill 5B6288 20%, stroke F2A3EC
+    ellipse3: {
+        left: 166,
+        top: -233,
+        backgroundColor: 'rgba(91, 98, 136, 0.2)', // 5B6288 20%
+        borderColor: '#F2A3EC',
+    },
+
+    // Круг 4: x 77 y -282, stroke F2A3EC (только обводка)
+    ellipse4: {
+        left: 77,
+        top: -282,
+        backgroundColor: 'transparent',
+        borderColor: '#F2A3EC',
+    },
+
+    // Основной контент (позиция x: 27, y: 176)
+    filtersContent: {
+        marginTop: 190, // позиция y: 176
+        marginHorizontal: 27, // позиция x: 27
+        marginBottom: 100, // оставляем место для кнопки
+        zIndex: 4,
+    },
+
+    filtersTitleContainer: {
+        marginBottom: 16,
+        alignItems: 'center',
+    },
+
+    filtersMainTitle: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        fontFamily: 'Poppins-Bold',
+        fontWeight: '700',
+        letterSpacing: 0.4,
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+
+    filtersSubtitle: {
+        color: '#6472BD',
+        fontSize: 15,
+        fontFamily: 'Poppins-Medium',
+        fontWeight: '500',
+        textAlign: 'center',
+        lineHeight: 20,
+        paddingHorizontal: 20,
+    },
+
+    filtersOptionsContainer: {
+        gap: 12,
+        marginTop: 11,
+        alignItems: 'center', // центрируем карточки
+    },
+
+    filtersOptionCard: {
+        backgroundColor: 'rgba(49, 52, 86, 0.4)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 20,
+        padding: 16,
+        width: 339,
+        position: 'relative',
+    },
+
+    filtersOptionCardSelected: {
+        backgroundColor: 'rgba(49, 52, 86, 0.6)',
+        borderColor: '#9CA4FF',
+    },
+
+    filtersOptionContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
+        height: '100%',
+    },
+
+    filtersIconCircle: {
+        width: 43,
+        height: 43,
+        borderRadius: 21.5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    filtersOptionTextContainer: {
+        flex: 1,
+        gap: 4,
+        justifyContent: 'center',
+        minHeight: 43,
+    },
+
+    // Контейнер для третьего варианта
+    thirdOptionContainer: {
+        height: 71, // 103 - 16*2 = 71
+        justifyContent: 'center',
+        gap: 2,
+    },
+
+    // Заголовок для третьего варианта
+    thirdOptionTitle: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+        lineHeight: 21,
+    },
+
+    // Описание для третьего варианта
+    thirdOptionDescription: {
+        color: '#C2CCFF',
+        fontSize: 12,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        lineHeight: 18,
+        width: 200,
+    },
+
+    // Стили для первых двух вариантов
+    filtersOptionTitle: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+        lineHeight: 21,
+    },
+
+    filtersOptionDescription: {
+        color: '#C2CCFF',
+        fontSize: 12,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        lineHeight: 16,
+    },
+
+    // Радио кнопки
+    filtersOptionRadio: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        borderWidth: 1,
+        borderColor: '#466382',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+    },
+
+    filtersOptionRadioSelected: {
+        // Цвет границы устанавливается динамически
+    },
+
+    filtersOptionRadioDot: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: '#466382', // Цвет будет установлен динамически
+    },
+
+    filtersInfoCard: {
+        backgroundColor: '#0C1025',
+        borderRadius: 15,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        marginTop: 24,
+        minHeight: 54,
+        width: 339,
+        alignSelf: 'center', // центрируем
+    },
+
+    filtersInfoIcon: {
+        width: 16,
+        height: 16,
+        tintColor: '#97A1D5',
+    },
+
+    filtersInfoText: {
+        flex: 1,
+        color: '#97A1D5',
+        fontSize: 10,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        lineHeight: 14,
+    },
+
+    filtersFooter: {
+        position: 'absolute',
+        bottom: 60,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        zIndex: 5, // Кнопка поверх всего
+    },
+
+    // Контейнер для кнопки 273×51
+    filtersSaveButtonContainer: {
+        width: 273,
+        height: 51,
+        borderRadius: 60,
+        overflow: 'hidden',
+        // Тень
+        shadowColor: '#010124',
+        shadowOffset: {
+            width: 0,
+            height: 8,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 4,
+    },
+
+// === СТИЛИ ДЛЯ SWIPE ЭКРАНА ===
+
+swipeContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
 },
 
-// Кнопка назад
-backButton: {
-  position: 'absolute',
-  left: 27,
-  top: 46,
-  zIndex: 7,
+swipeContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 107,
 },
 
-backButtonCircle: {
-  width: 35,
-  height: 35,
-  borderRadius: 17.5,
-  backgroundColor: 'rgba(49, 52, 86, 0.22)', // 313456 22%
-  borderWidth: 1.5,
-  borderColor: '#6472BD', // stroke 6472BD
-  justifyContent: 'center',
-  alignItems: 'center',
+// Новая карточка
+swipeCard: {
+    position: 'absolute',
+    backgroundColor: '#00020A',
+    width: 328,
+    height: 548,
+    top: 87,
+    left: 33,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
 },
 
-backIcon: {
-  width: 19,
-  height: 11,
-  // tintColor удален, чтобы отображать оригинальный цвет изображения
+// Верхняя секция (фото)
+cardTopSection: {
+    width: 318,
+    height: 312,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    overflow: 'hidden',
+    marginHorizontal: 5,
+    marginTop: 5,
+    position: 'relative',
 },
 
-// Заголовок "Критерии подбора"
-headerTitle: {
-  position: 'absolute',
-  left: 116,
-  top: 52,
-  color: '#FFFFFF',
-  fontSize: 16,
-  fontFamily: 'Poppins-SemiBold',
-  fontWeight: '600',
-  letterSpacing: 0.4,
+cardImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
 },
 
-filtersContainer: {
-  flex: 1,
-  backgroundColor: 'transparent',
-  position: 'relative',
-  zIndex: 3, // Контейнер поверх кругов
+noImageContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#313456',
+    justifyContent: 'center',
+    alignItems: 'center',
 },
 
-// Контейнер для фоновых кругов
-filtersBackground: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  zIndex: 2, // Круги поверх BackgroundImage
+// Имя и возраст
+nameAgeContainer: {
+    position: 'absolute',
+    top: 250,
+    left: 16,
 },
 
-// Базовые стили для всех кругов
-ellipse: {
-  position: 'absolute',
-  width: 400,
-  height: 400,
-  borderRadius: 200,
-  borderWidth: 2,
-  opacity: 0.8,
+nameAgeText: {
+    color: '#FFFFFF',
+    fontSize: 25,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 24,
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
 },
 
-// Круг 1: x -141 y 750, fill 5B6288 20%, stroke 9CAAF4
-ellipse1: {
-  left: -141,
-  top: 750,
-  backgroundColor: 'rgba(91, 98, 136, 0.2)', // 5B6288 20%
-  borderColor: '#9CAAF4',
+// Образование
+educationContainer: {
+    position: 'absolute',
+    top: 280,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
 },
 
-// Круг 2: x -242 y 662, stroke 9CAAF4 (только обводка)
-ellipse2: {
-  left: -242,
-  top: 662,
-  backgroundColor: 'transparent',
-  borderColor: '#9CAAF4',
+educationIcon: {
+    width: 19.61,
+    height: 17.71,
 },
 
-// Круг 3: x 166 y -233, fill 5B6288 20%, stroke F2A3EC
-ellipse3: {
-  left: 166,
-  top: -233,
-  backgroundColor: 'rgba(91, 98, 136, 0.2)', // 5B6288 20%
-  borderColor: '#F2A3EC',
+facultyText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
 },
 
-// Круг 4: x 77 y -282, stroke F2A3EC (только обводка)
-ellipse4: {
-  left: 77,
-  top: -282,
-  backgroundColor: 'transparent',
-  borderColor: '#F2A3EC',
+// Нижняя секция
+cardBottomSection: {
+    width: 318,
+    height: 217,
+    backgroundColor: 'rgba(49, 52, 86, 0.22)',
+    borderWidth: 1,
+    borderColor: '#585A89',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginHorizontal: 5,
+    marginTop: 5,
 },
 
-// Основной контент (позиция x: 27, y: 176)
-filtersContent: {
-  marginTop: 190, // позиция y: 176
-  marginHorizontal: 27, // позиция x: 27
-  marginBottom: 100, // оставляем место для кнопки
-  zIndex: 4,
+// Scroll view
+bottomSectionScroll: {
+    width: '100%',
+    height: 217,
 },
 
-filtersTitleContainer: {
-  marginBottom: 16,
-  alignItems: 'center',
+bottomSectionContent: {
+    paddingHorizontal: 13,
+    paddingTop: 12,
+    paddingBottom: 20,
 },
 
-filtersMainTitle: {
-  color: '#FFFFFF',
-  fontSize: 20,
-  fontFamily: 'Poppins-Bold',
-  fontWeight: '700',
-  letterSpacing: 0.4,
-  textAlign: 'center',
-  marginBottom: 8,
+// О себе
+aboutSection: {
+    marginBottom: 7,
 },
 
-filtersSubtitle: {
-  color: '#6472BD',
-  fontSize: 15,
-  fontFamily: 'Poppins-Medium',
-  fontWeight: '500',
-  textAlign: 'center',
-  lineHeight: 20,
-  paddingHorizontal: 20,
+aboutHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginLeft: 0,
 },
 
-filtersOptionsContainer: {
-  gap: 12,
-  marginTop: 11,
-  alignItems: 'center', // центрируем карточки
+aboutIcon: {
+    width: 16,
+    height: 20,
 },
 
-filtersOptionCard: {
-  backgroundColor: 'rgba(49, 52, 86, 0.4)',
-  borderWidth: 1,
-  borderColor: '#585A89',
-  borderRadius: 20,
-  padding: 16,
-  width: 339,
-  position: 'relative',
+aboutTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
 },
 
-filtersOptionCardSelected: {
-  backgroundColor: 'rgba(49, 52, 86, 0.6)',
-  borderColor: '#9CA4FF',
+bioText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 18,
+    marginTop: 8,
+    width: 295,
+    marginLeft: 0,
+    textAlign: 'left',
 },
 
-filtersOptionContent: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 16,
-  height: '100%',
+// Навыки
+skillsSection: {
+    marginTop: 7,
 },
 
-filtersIconCircle: {
-  width: 43,
-  height: 43,
-  borderRadius: 21.5,
-  justifyContent: 'center',
-  alignItems: 'center',
+skillsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginLeft: 0,
 },
 
-filtersOptionTextContainer: {
-  flex: 1,
-  gap: 4,
-  justifyContent: 'center',
-  minHeight: 43,
+skillsIcon: {
+    width: 18,
+    height: 19.25,
 },
 
-// Контейнер для третьего варианта
-thirdOptionContainer: {
-  height: 71, // 103 - 16*2 = 71
-  justifyContent: 'center',
-  gap: 2,
+skillsTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
 },
 
-// Заголовок для третьего варианта
-thirdOptionTitle: {
-  color: '#FFFFFF',
-  fontSize: 14,
-  fontFamily: 'Poppins-SemiBold',
-  fontWeight: '600',
-  letterSpacing: 0.4,
-  lineHeight: 21,
+skillsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+    marginLeft: 0,
+    paddingRight: 17,
 },
 
-// Описание для третьего варианта
-thirdOptionDescription: {
-  color: '#C2CCFF',
-  fontSize: 12,
-  fontFamily: 'Poppins-Regular',
-  fontWeight: '400',
-  letterSpacing: 0.4,
-  lineHeight: 18,
-  width: 200,
+// Увлечения
+hobbiesSection: {
+    marginTop: 7,
 },
 
-// Стили для первых двух вариантов
-filtersOptionTitle: {
-  color: '#FFFFFF',
-  fontSize: 14,
-  fontFamily: 'Poppins-SemiBold',
-  fontWeight: '600',
-  letterSpacing: 0.4,
-  lineHeight: 21,
+hobbiesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginLeft: 0,
 },
 
-filtersOptionDescription: {
-  color: '#C2CCFF',
-  fontSize: 12,
-  fontFamily: 'Poppins-Regular',
-  fontWeight: '400',
-  letterSpacing: 0.4,
-  lineHeight: 16,
+hobbiesIcon: {
+    width: 15.88,
+    height: 19.32,
 },
 
-// Радио кнопки
-filtersOptionRadio: {
-  width: 18,
-  height: 18,
-  borderRadius: 9,
-  borderWidth: 1,
-  borderColor: '#466382',
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: '#FFFFFF',
+hobbiesTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
 },
 
-filtersOptionRadioSelected: {
-  // Цвет границы устанавливается динамически
+hobbiesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+    marginLeft: 0,
+    paddingRight: 17,
 },
 
-filtersOptionRadioDot: {
-  width: 12,
-  height: 12,
-  borderRadius: 6,
-  backgroundColor: '#466382', // Цвет будет установлен динамически
+// Овальные окошки
+skillTag: {
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    height: 31,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
 },
 
-filtersInfoCard: {
-  backgroundColor: '#0C1025',
-  borderRadius: 15,
-  paddingHorizontal: 16,
-  paddingVertical: 12,
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 12,
-  marginTop: 24,
-  minHeight: 54,
-  width: 339,
-  alignSelf: 'center', // центрируем
+skillText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontFamily: 'Poppins-Regular',
+    fontWeight: '400',
+    lineHeight: 16,
 },
 
-filtersInfoIcon: {
-  width: 16,
-  height: 16,
-  tintColor: '#97A1D5',
+hobbyTag: {
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    height: 31,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
 },
 
-filtersInfoText: {
-  flex: 1,
-  color: '#97A1D5',
-  fontSize: 10,
-  fontFamily: 'Poppins-Regular',
-  fontWeight: '400',
-  letterSpacing: 0.4,
-  lineHeight: 14,
+hobbyText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontFamily: 'Poppins-Regular',
+    fontWeight: '400',
+    lineHeight: 16,
 },
 
-filtersFooter: {
-  position: 'absolute',
-  bottom: 60,
-  left: 0,
-  right: 0,
-  alignItems: 'center',
-  zIndex: 5, // Кнопка поверх всего
+// Кнопки действий
+actionButtons: {
+    position: 'absolute',
+    top: 659,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingLeft: 103,
+    zIndex: 1000,
 },
 
-// Контейнер для кнопки 273×51
-filtersSaveButtonContainer: {
-  width: 273,
-  height: 51,
-  borderRadius: 60,
-  overflow: 'hidden',
-  // Тень
-  shadowColor: '#010124',
-  shadowOffset: {
-    width: 0,
-    height: 8,
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 4,
-  elevation: 4,
+dislikeButtonNew: {
+    width: 61,
+    height: 61,
+    justifyContent: 'center',
+    alignItems: 'center',
 },
-});
+
+dislikeIcon: {
+    width: 61,
+    height: 61,
+},
+
+likeButtonNew: {
+    width: 74,
+    height: 74,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 54,
+    marginTop: -6,
+},
+
+likeIcon: {
+    width: 74,
+    height: 74,
+},
+
+// Нижняя панель
+bottomPanel: {
+    position: 'absolute',
+    bottom: 0,
+    left: 1,
+    right: 1,
+    width: width - 2,
+    height: 107,
+    backgroundColor: 'rgba(0, 2, 10, 0.5)',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingTop: 21,
+    paddingHorizontal: 42,
+    shadowColor: '#000000',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
+    overflow: 'hidden',
+},
+
+bottomPanelButton: {
+    alignItems: 'center',
+    width: 70,
+},
+
+bottomPanelIcon: {
+    width: 55,
+    height: 55,
+    marginBottom: 8,
+},
+
+bottomPanelText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontWeight: '600',
+    textAlign: 'center',
+},
+
+centerPanelButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 64,
+    height: 64,
+    marginTop: -5,
+},
+
+centerPanelIcon: {
+    width: 64,
+    height: 64,
+},
+
+// Индикаторы свайпа
+likeIndicator: {
+    position: 'absolute',
+    backgroundColor: '#4CD964',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: 'white',
+    transform: [{ translateX: width - 100 }, { translateY: 20 }],
+},
+
+likeText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+},
+
+dislikeIndicator: {
+    position: 'absolute',
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: 'white',
+    transform: [{ translateX: 20 }, { translateY: 20 }],
+},
+
+dislikeText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+},
+
+// Экран "нет больше профилей"
+noMoreContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    marginBottom: 107,
+},
+
+noMoreText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+    textAlign: 'center',
+},
+
+noMoreSubtext: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 16,
+},
+
+// Кнопки для переключения профилей
+showAllButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+},
+
+showAllButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+},
+
+refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E3F2FD',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+},
+
+refreshButtonText: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+},
+} // <-- ЗАКРЫВАЮЩАЯ СКОБКА ДЛЯ StyleSheet.create
+);
