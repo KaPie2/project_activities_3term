@@ -2,9 +2,13 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-const backgroundImage = require('..//../assets/images/welcome/background.png');
+const backgroundImage = require('../../assets/images/welcome/background.png');
 
-export default function BackgroundImage() {
+interface BackgroundImageProps {
+  children?: React.ReactNode; // Добавляем поддержку children
+}
+
+export default function BackgroundImage({ children }: BackgroundImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -23,6 +27,13 @@ export default function BackgroundImage() {
           setIsLoaded(true);
         }}
       />
+      
+      {/* Children (другие компоненты поверх фона) */}
+      {children && (
+        <View style={styles.content}>
+          {children}
+        </View>
+      )}
     </View>
   );
 }
@@ -46,5 +57,12 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  content: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

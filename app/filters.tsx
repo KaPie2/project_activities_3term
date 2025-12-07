@@ -1,25 +1,83 @@
-import { Ionicons } from '@expo/vector-icons';
+// app/filters.tsx
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
+import BackgroundImage from './components/BackgroundImage';
+import GradientButton from './components/GradientButton';
+import { styles } from './style_template';
+
+// Импортируем изображения из assets
+const devBlueIcon = require('../assets/images/filters/dev_blue.png');
+const kubikiRedIcon = require('../assets/images/filters/kubiki_red.png');
+const flagPurpleIcon = require('../assets/images/filters/flag_purple.png');
+const attentionIcon = require('../assets/images/filters/attention.png');
+const backIcon = require('../assets/images/filters/back.png');
 
 type MatchCriteria = 'skills' | 'hobbies' | 'both';
+
+interface CriteriaOption {
+  id: MatchCriteria;
+  title: string;
+  description: string;
+  icon: any;
+  circleColor: string;
+  iconWidth: number;
+  iconHeight: number;
+  cardHeight: number;
+  radioBorderColor: string;
+}
 
 export default function FiltersScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const [selectedCriteria, setSelectedCriteria] = useState<MatchCriteria>('both');
   const [loading, setLoading] = useState(false);
+
+  const criteriaOptions: CriteriaOption[] = [
+    {
+      id: 'skills',
+      title: 'По навыкам',
+      description: 'Подбирать людей с похожими профессиональными навыками',
+      icon: devBlueIcon,
+      circleColor: '#D3E1FF',
+      iconWidth: 26,
+      iconHeight: 26,
+      cardHeight: 84,
+      radioBorderColor: '#466382',
+    },
+    {
+      id: 'hobbies',
+      title: 'По увлечениям',
+      description: 'Находить людей с общими интересами и хобби',
+      icon: kubikiRedIcon,
+      circleColor: '#FFDEDE',
+      iconWidth: 25,
+      iconHeight: 25,
+      cardHeight: 84,
+      radioBorderColor: '#C36062',
+    },
+    {
+      id: 'both',
+      title: 'По навыкам и увлечениям',
+      description: 'Учитывать и профессиональные навыки, и общие интересы',
+      icon: flagPurpleIcon,
+      circleColor: '#F8D3FF',
+      iconWidth: 23,
+      iconHeight: 25,
+      cardHeight: 103,
+      radioBorderColor: '#8F5E98',
+    },
+  ];
 
   useEffect(() => {
     loadUserPreferences();
@@ -29,7 +87,6 @@ export default function FiltersScreen() {
     if (!user?.email) return;
 
     try {
-      // Ищем профиль по email
       const profilesQuery = query(
         collection(db, "profile"), 
         where("email", "==", user.email)
@@ -52,7 +109,6 @@ export default function FiltersScreen() {
 
     setLoading(true);
     try {
-      // Находим профиль по email
       const profilesQuery = query(
         collection(db, "profile"), 
         where("email", "==", user.email)
@@ -66,7 +122,6 @@ export default function FiltersScreen() {
 
       const profileDoc = profilesSnapshot.docs[0];
       
-      // Обновляем найденный документ профиля
       await updateDoc(profileDoc.ref, {
         matchCriteria: selectedCriteria,
         updatedAt: new Date().toISOString(),
@@ -86,73 +141,113 @@ export default function FiltersScreen() {
     router.back();
   };
 
-  const criteriaOptions = [
-    {
-      id: 'skills' as MatchCriteria,
-      title: 'По навыкам',
-      description: 'Подбирать людей с похожими профессиональными навыками',
-      icon: 'hammer-outline' as any,
-      color: '#007AFF',
-    },
-    {
-      id: 'hobbies' as MatchCriteria,
-      title: 'По увлечениям',
-      description: 'Находить людей с общими интересами и хобби',
-      icon: 'heart-outline' as any,
-      color: '#FF2D55',
-    },
-    {
-      id: 'both' as MatchCriteria,
-      title: 'По навыкам и увлечениям',
-      description: 'Учитывать и профессиональные навыки, и общие интересы',
-      icon: 'star-outline' as any,
-      color: '#5856D6',
-    },
-  ];
-
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
+    <View style={{ flex: 1 }}>
+      {/* Фоновое изображение */}
+      <BackgroundImage />
+      
+      {/* Фоновые круги */}
+      <View style={styles.filtersBackground}>
+        <View style={[styles.ellipse, styles.ellipse1]} />
+        <View style={[styles.ellipse, styles.ellipse2]} />
+        <View style={[styles.ellipse, styles.ellipse3]} />
+        <View style={[styles.ellipse, styles.ellipse4]} />
+      </View>
+      
+      {/* Статус бар */}
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      
+      {/* Верхнее окошко с заголовком и кнопкой назад */}
+      <View style={styles.topHeader}>
+        {/* Кнопка назад */}
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <View style={styles.backButtonCircle}>
+            <Image 
+              source={backIcon}
+              style={styles.backIcon}
+              resizeMode="contain"
+            />
+          </View>
         </TouchableOpacity>
+        
+        {/* Заголовок "Критерии подбора" */}
         <Text style={styles.headerTitle}>Критерии подбора</Text>
-        <View style={styles.placeholder} />
       </View>
 
-      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Как подбирать людей?</Text>
-          <Text style={styles.subtitle}>
-            Выберите, по каким критериям система будет предлагать вам людей для знакомства
-          </Text>
+      {/* Основной контейнер */}
+      <View style={styles.filtersContainer}>
+        {/* Основной контент */}
+        <View style={styles.filtersContent}>
+          {/* Заголовок и подзаголовок */}
+          <View style={styles.filtersTitleContainer}>
+            <Text style={styles.filtersMainTitle}>Как подбирать людей?</Text>
+            <Text style={styles.filtersSubtitle}>
+              Выберите, по каким критериям система будет предлагать вам людей для знакомства
+            </Text>
+          </View>
 
-          <View style={styles.optionsContainer}>
+          {/* Карточки с опциями */}
+          <View style={styles.filtersOptionsContainer}>
             {criteriaOptions.map((option) => (
               <TouchableOpacity
                 key={option.id}
                 style={[
-                  styles.optionCard,
-                  selectedCriteria === option.id && styles.optionCardSelected,
+                  styles.filtersOptionCard,
+                  { height: option.cardHeight },
+                  selectedCriteria === option.id && styles.filtersOptionCardSelected,
                 ]}
                 onPress={() => setSelectedCriteria(option.id)}
+                activeOpacity={0.7}
               >
-                <View style={styles.optionHeader}>
-                  <View style={[styles.iconContainer, { backgroundColor: `${option.color}20` }]}>
-                    <Ionicons name={option.icon} size={24} color={option.color} />
-                  </View>
-                  <View style={styles.optionText}>
-                    <Text style={styles.optionTitle}>{option.title}</Text>
-                    <Text style={styles.optionDescription}>{option.description}</Text>
-                  </View>
+                <View style={styles.filtersOptionContent}>
+                  {/* Круглая иконка 43x43 по центру по вертикали */}
                   <View style={[
-                    styles.radioCircle,
-                    selectedCriteria === option.id && styles.radioCircleSelected,
-                    selectedCriteria === option.id && { borderColor: option.color }
+                    styles.filtersIconCircle,
+                    { backgroundColor: option.circleColor }
+                  ]}>
+                    <Image 
+                      source={option.icon}
+                      style={{ 
+                        width: option.iconWidth, 
+                        height: option.iconHeight 
+                      }}
+                      resizeMode="contain"
+                    />
+                  </View>
+
+                  {/* Текст для всех вариантов */}
+                  <View style={[
+                    styles.filtersOptionTextContainer,
+                    option.id === 'both' && styles.thirdOptionContainer
+                  ]}>
+                    <Text style={[
+                      styles.filtersOptionTitle,
+                      option.id === 'both' && styles.thirdOptionTitle
+                    ]}>
+                      {option.title}
+                    </Text>
+                    <Text style={[
+                      styles.filtersOptionDescription,
+                      option.id === 'both' && styles.thirdOptionDescription
+                    ]}>
+                      {option.description}
+                    </Text>
+                  </View>
+
+                  {/* Радио кнопка по центру по вертикали */}
+                  <View style={[
+                    styles.filtersOptionRadio,
+                    { borderColor: option.radioBorderColor },
+                    selectedCriteria === option.id && [
+                      styles.filtersOptionRadioSelected,
+                      { borderColor: option.radioBorderColor }
+                    ]
                   ]}>
                     {selectedCriteria === option.id && (
-                      <View style={[styles.radioSelected, { backgroundColor: option.color }]} />
+                      <View style={[
+                        styles.filtersOptionRadioDot,
+                        { backgroundColor: option.radioBorderColor }
+                      ]} />
                     )}
                   </View>
                 </View>
@@ -160,177 +255,31 @@ export default function FiltersScreen() {
             ))}
           </View>
 
-          <View style={styles.infoCard}>
-            <Ionicons name="information-circle-outline" size={24} color="#007AFF" />
-            <Text style={styles.infoText}>
+          {/* Информационная карточка */}
+          <View style={styles.filtersInfoCard}>
+            <Image 
+              source={attentionIcon}
+              style={styles.filtersInfoIcon}
+              resizeMode="contain"
+            />
+            <Text style={styles.filtersInfoText}>
               Система будет предлагать людей, у которых есть совпадения по выбранным критериям
             </Text>
           </View>
         </View>
-      </ScrollView>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={[styles.saveButton, loading && styles.saveButtonDisabled]} 
-          onPress={handleSavePreferences}
-          disabled={loading}
-        >
-          <Text style={styles.saveButtonText}>
-            {loading ? 'Сохранение...' : 'Сохранить настройки'}
-          </Text>
-        </TouchableOpacity>
+        {/* Footer с кнопкой сохранить */}
+        <View style={styles.filtersFooter}>
+          <View style={styles.filtersSaveButtonContainer}>
+            <GradientButton
+              title="Сохранить"
+              onPress={handleSavePreferences}
+              loading={loading}
+              disabled={loading}
+            />
+          </View>
+        </View>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 60,
-    paddingBottom: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  placeholder: {
-    width: 40,
-  },
-  scrollContent: {
-    flex: 1,
-  },
-  content: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 22,
-  },
-  optionsContainer: {
-    gap: 16,
-    marginBottom: 24,
-  },
-  optionCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  optionCardSelected: {
-    borderColor: '#007AFF',
-    shadowColor: '#007AFF',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  optionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  optionText: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  optionDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 18,
-  },
-  radioCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#ddd',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioCircleSelected: {
-    borderWidth: 2,
-  },
-  radioSelected: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  infoCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#E3F2FD',
-    borderRadius: 12,
-    padding: 16,
-    gap: 12,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#1976D2',
-    lineHeight: 18,
-  },
-  footer: {
-    padding: 20,
-    backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  saveButton: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  saveButtonDisabled: {
-    backgroundColor: '#cccccc',
-  },
-  saveButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
