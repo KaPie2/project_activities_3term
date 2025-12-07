@@ -2,8 +2,8 @@ import { Asset } from 'expo-asset';
 import { Stack } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
+import LoadingScreen from './components/LoadingScreen';
 
 const preloadBackgroundImage = async () => {
   try {
@@ -36,12 +36,14 @@ function RootLayoutContent() {
 
   // Показываем индикатор загрузки пока проверяем авторизацию
   if (isAuthenticated === null) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  return (
+    <LoadingScreen 
+      title="OMSTU Connect"
+      subtitle="Загружаем ваши данные..."
+      mode="minimal"
+    />
+  );
+}
 
   return (
     <Stack>

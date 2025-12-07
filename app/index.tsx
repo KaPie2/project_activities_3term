@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
+import LoadingScreen from './components/LoadingScreen';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -23,12 +24,13 @@ export default function HomeScreen() {
 
   // Если проверка еще не завершена, показываем загрузку
   if (isAuthenticated === null) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  return (
+    <LoadingScreen 
+      title="Проверка авторизации"
+      subtitle="Определяем ваш статус..."
+    />
+  );
+}
 
   // Этот return больше не показывается, так как есть редирект
   // Но оставляем его для TypeScript

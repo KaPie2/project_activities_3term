@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
 } from 'react-native';
 import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
+import LoadingScreen from './components/LoadingScreen';
 
 interface Chat {
   id: string;
@@ -80,12 +80,13 @@ export default function ChatsScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
+  return (
+    <LoadingScreen 
+      title="Загружаем чаты"
+      subtitle="Получаем список ваших бесед..."
+    />
+  );
+}
 
   return (
     <View style={styles.container}>

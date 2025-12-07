@@ -3,17 +3,17 @@ import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
+import LoadingScreen from './components/LoadingScreen';
 
 // Заглушки для изображений - замените на реальные из ваших assets
 const defaultAvatar = require('../assets/images/icon.png'); // Используем вашу существующую иконку
@@ -102,12 +102,13 @@ export default function ProfileScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
+  return (
+    <LoadingScreen 
+      title="Загружаем профиль"
+      subtitle="Получаем информацию о пользователе..."
+    />
+  );
+}
 
   if (!profile) {
     return (

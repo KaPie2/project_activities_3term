@@ -7,6 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Alert, Animated, Dimensions, Image, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
+import LoadingScreen from './components/LoadingScreen';
 
 const defaultAvatar = require('../assets/images/icon.png');
 
@@ -771,12 +772,13 @@ export default function SwipeScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text>Загрузка профилей...</Text>
-      </View>
-    );
-  }
+  return (
+    <LoadingScreen 
+      title="Ищем студентов"
+      subtitle="Анализируем профили по вашим критериям..."
+    />
+  );
+}
 
   if (currentIndex >= profiles.length) {
     return (
