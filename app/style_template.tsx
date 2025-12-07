@@ -1,5 +1,6 @@
 import {
     Dimensions,
+    Platform,
     StyleSheet
 } from 'react-native';
 
@@ -9,10 +10,6 @@ const CARD_WIDTH = Math.min(width * 1, 350); // 85% от ширины экран
 const CARD_HEIGHT = height * 0.63; // 67% от высоты экрана
 const CARD_TOP_MARGIN = height * 0.12; // 8% сверху
 const CARD_HORIZONTAL_MARGIN = (width - CARD_WIDTH) / 2; // Автоматический расчет боковых отступов
-const BUTTONS_TOP_MARGIN = height * 0.72; // Кнопки на 72% от верха
-const BUTTONS_HORIZONTAL_CENTER = width * 0.5; // Центр экрана
-const BUTTONS_HEIGHT_OFFSET = height * 0.65; // 65% от высоты экрана (ниже)
-const BUTTONS_SPACING = width * 0.1; // 10% от ширины экрана (ближе)
 
 const PHOTO_HEIGHT = CARD_WIDTH * 0.95; // 95% от ширины карточки
 const BOTTOM_HEIGHT = CARD_WIDTH * 0.66; // 66% от ширины карточки
@@ -1156,5 +1153,53 @@ export const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         marginLeft: 8,
+    },
+
+    // Стили для даты рождения
+    inputText: {
+        fontSize: 16,
+        color: '#000',
+    },
+    placeholderText: {
+        fontSize: 16,
+        color: '#666',
+    },
+    ageText: {
+        position: 'absolute',
+        right: 12,
+        fontSize: 14,
+        color: '#007AFF',
+        fontWeight: '500',
+    },
+    
+    // Стили для модального окна с DatePicker
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+    },
+    datePickerContainer: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingTop: 20,
+        paddingBottom: Platform.OS === 'ios' ? 30 : 20,
+    },
+    iosButtons: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderTopWidth: 1,
+        borderTopColor: '#eee',
+    },
+    iosButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+    },
+    iosButtonText: {
+        fontSize: 16,
+        color: '#007AFF',
+        fontWeight: '600',
     },
 });

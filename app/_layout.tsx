@@ -9,7 +9,6 @@ const preloadBackgroundImage = async () => {
   try {
     const backgroundImage = require('../assets/images/welcome/background.png');
     await Asset.fromModule(backgroundImage).downloadAsync();
-    console.log('✅ Фоновое изображение предзагружено');
   } catch (error) {
     console.warn('⚠️ Ошибка предзагрузки фона:', error);
   }

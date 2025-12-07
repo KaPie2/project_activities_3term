@@ -15,8 +15,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import LoadingScreen from './components/LoadingScreen';
 
-// Заглушки для изображений - замените на реальные из ваших assets
-const defaultAvatar = require('../assets/images/icon.png'); // Используем вашу существующую иконку
+const defaultAvatar = require('../assets/images/icon.png');
 
 interface UserProfile {
   id: string;
@@ -27,6 +26,7 @@ interface UserProfile {
   hobbies: string[];
   bio: string;
   gender: string;
+  birthDate?: any; // Дата рождения из базы данных
   profileCompleted: boolean;
   avatar?: string;
 }
@@ -45,14 +45,14 @@ export default function ProfileScreen() {
     if (!user?.email) return;
 
     try {
-      // Ищем профиль по email в коллекции profile
       const profilesQuery = query(collection(db, "profile"), where("email", "==", user.email));
       const profilesSnapshot = await getDocs(profilesQuery);
       
       if (!profilesSnapshot.empty) {
         const profileData = profilesSnapshot.docs[0].data();
+        
         setProfile({
-          id: profilesSnapshot.docs[0].id, // ID документа из коллекции profile
+          id: profilesSnapshot.docs[0].id,
           name: profileData.name || '',
           email: profileData.email || '',
           faculty: profileData.faculty || '',
@@ -60,11 +60,11 @@ export default function ProfileScreen() {
           hobbies: profileData.hobbies || [],
           bio: profileData.bio || '',
           gender: profileData.gender || '',
-          profileCompleted: true, // если профиль найден - значит заполнен
+          birthDate: profileData.birthDate || null, // Берем из базы
+          profileCompleted: true,
           avatar: profileData.avatar,
         });
       } else {
-        // Если профиль не найден
         setProfile(null);
       }
     } catch (error) {
@@ -73,6 +73,80 @@ export default function ProfileScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Форматирование даты в дд.мм.гггг
+  const formatBirthDate = (birthDate: any): string => {
+    if (!birthDate) return 'Не указана';
+    
+    try {
+      // Если это Firebase Timestamp, преобразуем в Date
+      const date = birthDate.toDate ? birthDate.toDate() : new Date(birthDate);
+      
+      // Проверяем что дата валидна
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date:', birthDate);
+        return 'Неверная дата';
+      }
+      
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      
+      return `${day}.${month}.${year}`;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Ошибка формата';
+    }
+  };
+
+  // Расчет возраста на основе даты рождения
+  const calculateAge = (birthDate: any): number | null => {
+    if (!birthDate) return null;
+    
+    try {
+      const birth = birthDate.toDate ? birthDate.toDate() : new Date(birthDate);
+      const today = new Date();
+      
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      
+      // Если день рождения еще не наступил в этом году, вычитаем 1 год
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      
+      return age;
+    } catch (error) {
+      console.error('Error calculating age:', error);
+      return null;
+    }
+  };
+
+  // Получение возраста с правильным склонением
+  const getAgeWithDeclension = (age: number | null): string => {
+    if (age === null) return '';
+    
+    const lastDigit = age % 10;
+    const lastTwoDigits = age % 100;
+    
+    // 11-19 лет
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+      return `${age} лет`;
+    }
+    
+    // 1 год
+    if (lastDigit === 1) {
+      return `${age} год`;
+    }
+    
+    // 2, 3, 4 года
+    if (lastDigit >= 2 && lastDigit <= 4) {
+      return `${age} года`;
+    }
+    
+    // остальное - лет
+    return `${age} лет`;
   };
 
   const handleEditProfile = () => {
@@ -102,13 +176,13 @@ export default function ProfileScreen() {
   };
 
   if (loading) {
-  return (
-    <LoadingScreen 
-      title="Загружаем профиль"
-      subtitle="Получаем информацию о пользователе..."
-    />
-  );
-}
+    return (
+      <LoadingScreen 
+        title="Загружаем профиль"
+        subtitle="Получаем информацию о пользователе..."
+      />
+    );
+  }
 
   if (!profile) {
     return (
@@ -125,6 +199,11 @@ export default function ProfileScreen() {
       default: return 'Не указан';
     }
   };
+
+  // Получаем данные о дате рождения и возрасте
+  const formattedBirthDate = formatBirthDate(profile.birthDate);
+  const age = calculateAge(profile.birthDate);
+  const ageText = getAgeWithDeclension(age);
 
   return (
     <View style={styles.container}>
@@ -169,6 +248,32 @@ export default function ProfileScreen() {
               <Text style={styles.infoTitle}>Пол</Text>
             </View>
             <Text style={styles.infoValue}>{getGenderDisplayText(profile.gender)}</Text>
+          </View>
+
+          {/* Дата рождения */}
+          <View style={styles.infoCard}>
+            <View style={styles.infoHeader}>
+              <Ionicons name="calendar-outline" size={20} color="#007AFF" />
+              <Text style={styles.infoTitle}>Дата рождения</Text>
+            </View>
+            
+            {profile.birthDate ? (
+              <View>
+                <Text style={styles.birthDateText}>
+                  {formattedBirthDate}
+                </Text>
+                
+                {age !== null && (
+                  <View style={styles.ageContainer}>
+                    <View style={styles.ageBadge}>
+                      <Text style={styles.ageBadgeText}>{ageText}</Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <Text style={styles.noInfoText}>Не указана</Text>
+            )}
           </View>
 
           {/* Skills */}
@@ -321,6 +426,29 @@ const styles = StyleSheet.create({
     color: '#333',
     marginLeft: 8,
   },
+  // Стиль для отображения даты рождения
+  birthDateText: {
+    fontSize: 16,
+    color: '#444',
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  // Контейнер для возраста
+  ageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ageBadge: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  ageBadgeText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   infoValue: {
     fontSize: 16,
     color: '#444',
@@ -342,7 +470,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-   hobbyTag: {
+  hobbyTag: {
     backgroundColor: '#34C759',
     paddingHorizontal: 12,
     paddingVertical: 6,
