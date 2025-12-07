@@ -22,7 +22,7 @@ const aboutMeIcon = require('../assets/images/swipe/About_me.png');
 const robotIcon = require('../assets/images/swipe/Robot.png');
 const bowlingIcon = require('../assets/images/swipe/Bowling.png');
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
 
 interface Profile {
@@ -213,13 +213,14 @@ export default function SwipeScreen() {
 
       let finalProfiles: Profile[] = [];
       
-      if (showingMatchedProfiles && matchedProfiles.length > 0) {
+      if (showingMatchedProfiles) {
+        // Показываем только подходящие профили
         finalProfiles = matchedProfiles;
-      } else if (showingMatchedProfiles && matchedProfiles.length === 0) {
-        finalProfiles = otherProfiles;
-        setShowingMatchedProfiles(false);
+        console.log(`📊 Загружено подходящих профилей: ${matchedProfiles.length}`);
       } else {
-        finalProfiles = [...matchedProfiles, ...otherProfiles];
+        // Показываем все неподходящие профили
+        finalProfiles = otherProfiles;
+        console.log(`📊 Загружено неподходящих профилей: ${otherProfiles.length}`);
       }
 
       setCurrentIndex(0);
@@ -232,12 +233,18 @@ export default function SwipeScreen() {
     }
   };
 
-  useEffect(() => {
-    if (showingMatchedProfiles && currentIndex >= profiles.length && profiles.length > 0) {
-      setShowingMatchedProfiles(false);
-      setRefreshKey(prev => prev + 1);
-    }
-  }, [currentIndex, profiles.length, showingMatchedProfiles]);
+  const handleShowAllProfiles = () => {
+    // Переключаемся на показ неподходящих профилей
+    setShowingMatchedProfiles(false);
+    setRefreshKey(prev => prev + 1);
+    setCurrentIndex(0);
+  };
+
+  const handleRefreshProfiles = () => {
+    // Обновляем профили в текущем режиме
+    setRefreshKey(prev => prev + 1);
+    setCurrentIndex(0);
+  };
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -283,13 +290,6 @@ export default function SwipeScreen() {
     
     if (isLastProfile) {
       setCurrentIndex(currentIndex + 1);
-      
-      setTimeout(() => {
-        if (showingMatchedProfiles) {
-          setShowingMatchedProfiles(false);
-          setRefreshKey(prev => prev + 1);
-        }
-      }, 100);
     } else {
       setCurrentIndex(prev => prev + 1);
     }
@@ -486,7 +486,6 @@ export default function SwipeScreen() {
           cardStyle
         ]}
       >
-        {/* Верхняя секция с PanResponder (ТОЛЬКО здесь свайп) */}
         <View 
           ref={topSectionRef}
           {...(isTopCard ? panResponder.panHandlers : {})}
@@ -507,7 +506,6 @@ export default function SwipeScreen() {
               </View>
             )}
             
-            {/* Имя и возраст */}
             <View style={styles.nameAgeContainer}>
               <Text style={styles.nameAgeText}>
                 {profile.name || 'Имя не указано'}
@@ -515,7 +513,6 @@ export default function SwipeScreen() {
               </Text>
             </View>
             
-            {/* Факультет */}
             <View style={styles.educationContainer}>
               <Image 
                 source={educationIcon}
@@ -529,7 +526,6 @@ export default function SwipeScreen() {
           </View>
         </View>
 
-        {/* Нижняя секция БЕЗ PanResponder (здесь будет скролл) */}
         <View style={styles.cardBottomSection}>
           <ScrollView 
             style={styles.bottomSectionScroll}
@@ -537,7 +533,6 @@ export default function SwipeScreen() {
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
           >
-            {/* О себе */}
             <View style={styles.aboutSection}>
               <View style={styles.aboutHeader}>
                 <Image 
@@ -556,7 +551,6 @@ export default function SwipeScreen() {
               )}
             </View>
 
-            {/* Навыки */}
             <View style={styles.skillsSection}>
               <View style={styles.skillsHeader}>
                 <Image 
@@ -587,7 +581,6 @@ export default function SwipeScreen() {
               )}
             </View>
 
-            {/* Увлечения */}
             <View style={styles.hobbiesSection}>
               <View style={styles.hobbiesHeader}>
                 <Image 
@@ -632,47 +625,69 @@ export default function SwipeScreen() {
     );
   }
 
+  // ЭКРАН "НЕТ ПРОФИЛЕЙ" (когда все просмотрены или их вообще нет)
   if (currentIndex >= profiles.length) {
     return (
       <View style={styles.swipeContainer}>
         <BackgroundImage />
         
         <View style={styles.noMoreContainer}>
-          <Text style={styles.noMoreText}>
-            {profiles.length === 0 ? 'Нет доступных профилей' : 'Пока что больше нет профилей'}
-          </Text>
-          <Text style={styles.noMoreSubtext}>
-            {showingMatchedProfiles ? 
-              'Показать все профили, включая неподходящие под критерии?' : 
-              matchCriteria === 'skills' && 'Попробуйте изменить критерии подбора или добавить больше навыков в профиль'}
-            {showingMatchedProfiles ? 
-              '' : 
-              matchCriteria === 'hobbies' && 'Попробуйте изменить критерии подбора или добавить больше увлечений в профиль'}
-            {showingMatchedProfiles ? 
-              '' : 
-              matchCriteria === 'both' && 'Попробуйте изменить критерии подбора или добавить больше навыков и увлечений в профиль'}
-          </Text>
+          {profiles.length === 0 ? (
+            // Если профилей вообще нет
+            <>
+              <Text style={styles.noMoreText}>
+                {showingMatchedProfiles ? 
+                  'Нет подходящих под ваши критерии' : 
+                  'Нет доступных профилей'}
+              </Text>
+              <Text style={styles.noMoreSubtext}>
+                {showingMatchedProfiles ? 
+                  'Попробуйте изменить критерии подбора или обновить список' : 
+                  'Попробуйте обновить позже'}
+              </Text>
+            </>
+          ) : (
+            // Если все профили просмотрены
+            <>
+              <Text style={styles.noMoreText}>
+                {showingMatchedProfiles ? 
+                  'Вы просмотрели все подходящие профили' : 
+                  'Вы просмотрели все профили'}
+              </Text>
+              <Text style={styles.noMoreSubtext}>
+                {showingMatchedProfiles ? 
+                  'Хотите посмотреть остальные профили?' : 
+                  'Вы просмотрели все доступные профили'}
+              </Text>
+            </>
+          )}
           
           {showingMatchedProfiles ? (
-            <TouchableOpacity 
-              style={styles.showAllButton} 
-              onPress={() => {
-                setShowingMatchedProfiles(false);
-                setRefreshKey(prev => prev + 1);
-              }}
-            >
-              <Text style={styles.showAllButtonText}>Показать все профили</Text>
-            </TouchableOpacity>
+            // Если в режиме "только подходящие"
+            <>
+              <TouchableOpacity 
+                style={styles.showAllButton} 
+                onPress={handleShowAllProfiles}
+              >
+                <Text style={styles.showAllButtonText}>Показать все профили</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.refreshButton, { marginTop: 10 }]} 
+                onPress={handleRefreshProfiles}
+              >
+                <Ionicons name="refresh" size={20} color="#007AFF" />
+                <Text style={styles.refreshButtonText}>Обновить подходящие</Text>
+              </TouchableOpacity>
+            </>
           ) : (
+            // Если в режиме "все профили"
             <TouchableOpacity 
               style={styles.refreshButton} 
-              onPress={() => {
-                setRefreshKey(prev => prev + 1);
-                setCurrentIndex(0);
-              }}
+              onPress={handleRefreshProfiles}
             >
               <Ionicons name="refresh" size={20} color="#007AFF" />
-              <Text style={styles.refreshButtonText}>Обновить профили</Text>
+              <Text style={styles.refreshButtonText}>Обновить все профили</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -717,6 +732,7 @@ export default function SwipeScreen() {
     );
   }
 
+  // ОСНОВНОЙ ЭКРАН СВАЙПОВ
   return (
     <View style={styles.swipeContainer}>
       <BackgroundImage />
