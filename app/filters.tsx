@@ -1,7 +1,7 @@
 // app/filters.tsx
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Image,

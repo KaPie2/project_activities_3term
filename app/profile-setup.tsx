@@ -160,7 +160,7 @@ export default function ProfileSetupScreen() {
           hobbies: hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby !== ''),
           bio: bio,
           gender: gender,
-          birthDate: birthDate, // 🟢 Сохраняем дату рождения
+          birthDate: birthDate, 
           updatedAt: new Date().toISOString(),
         });
 
@@ -196,7 +196,7 @@ export default function ProfileSetupScreen() {
             hobbies: hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby !== ''),
             bio: bio,
             gender: gender,
-            birthDate: birthDate, // 🟢 Сохраняем дату рождения
+            birthDate: birthDate,
             updatedAt: new Date().toISOString(),
         });
 

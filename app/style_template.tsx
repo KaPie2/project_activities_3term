@@ -6,15 +6,23 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-const CARD_WIDTH = Math.min(width * 1, 350); // 85% от ширины экрана, но не больше 328
-const CARD_HEIGHT = height * 0.63; // 67% от высоты экрана
-const CARD_TOP_MARGIN = height * 0.12; // 8% сверху
+const CARD_WIDTH = Math.min(width * 1, 350); // 85% от ширины экрана, но не больше 350
+const CARD_HEIGHT = height * 0.63; // 63% от высоты экрана
+const CARD_TOP_MARGIN = height * 0.12; // 12% сверху
 const CARD_HORIZONTAL_MARGIN = (width - CARD_WIDTH) / 2; // Автоматический расчет боковых отступов
 
 const PHOTO_HEIGHT = CARD_WIDTH * 0.95; // 95% от ширины карточки
 const BOTTOM_HEIGHT = CARD_WIDTH * 0.66; // 66% от ширины карточки
 const CARD_TOTAL_HEIGHT = PHOTO_HEIGHT + BOTTOM_HEIGHT + 10;
 const BUTTONS_BELOW_CARD = CARD_TOP_MARGIN + CARD_TOTAL_HEIGHT + 20; // 20px под карточкой
+
+const dynamicFontSize = {
+    small: Math.max(width * 0.035, 12),
+    medium: Math.max(width * 0.04, 14),
+    large: Math.max(width * 0.045, 16),
+    xlarge: Math.max(width * 0.05, 18),
+    xxlarge: Math.max(width * 0.055, 20),
+};
 
 export const styles = StyleSheet.create({
     // === ОСНОВНЫЕ СТИЛИ ДЛЯ ЛОГИНА ===
@@ -415,19 +423,20 @@ export const styles = StyleSheet.create({
     backIcon: {
         width: 19,
         height: 11,
-        // tintColor удален, чтобы отображать оригинальный цвет изображения
     },
 
     // Заголовок "Критерии подбора"
     headerTitle: {
         position: 'absolute',
-        left: 116,
+        left: 0, 
+        right: 0, 
         top: 52,
         color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: dynamicFontSize.large, 
         fontFamily: 'Poppins-SemiBold',
         fontWeight: '600',
         letterSpacing: 0.4,
+        textAlign: 'center',
     },
 
     filtersContainer: {
@@ -1125,7 +1134,7 @@ export const styles = StyleSheet.create({
 
     // Кнопки для переключения профилей
     showAllButton: {
-        backgroundColor: '#007AFF',
+        backgroundColor: '#0769d1ff',
         paddingHorizontal: 24,
         paddingVertical: 12,
         borderRadius: 12,
