@@ -480,7 +480,7 @@ ellipse4: {
 
 // Основной контент (позиция x: 27, y: 176)
 filtersContent: {
-  marginTop: 176, // позиция y: 176
+  marginTop: 190, // позиция y: 176
   marginHorizontal: 27, // позиция x: 27
   marginBottom: 100, // оставляем место для кнопки
   zIndex: 4,
@@ -656,7 +656,7 @@ filtersInfoText: {
 
 filtersFooter: {
   position: 'absolute',
-  bottom: 80,
+  bottom: 60,
   left: 0,
   right: 0,
   alignItems: 'center',
