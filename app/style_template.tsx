@@ -1717,7 +1717,7 @@ export const styles = StyleSheet.create({
     // Хэдер профиля
     profileScreenHeader: {
         position: 'absolute',
-        top: 0,
+        top: 8,
         left: 0,
         right: 0,
         height: 88,
@@ -1732,15 +1732,15 @@ export const styles = StyleSheet.create({
     profileScreenBackButton: {
         position: 'absolute',
         left: dynamicSpacing.large,
-        top: 46,
+        top: 35,
         zIndex: 11,
-        padding: dynamicSpacing.small,
+        padding: dynamicSpacing.medium,
     },
 
     profileScreenBackIcon: {
-        width: dynamicIconSize.small * 0.55,
-        height: dynamicIconSize.small * 0.35,
-        tintColor: '#FFFFFF',
+        width: dynamicIconSize.medium * 1.3 ,
+        height: dynamicIconSize.medium * 1.3 ,
+        tintColor: '#6472BD',
     },
 
     profileScreenTitle: {
