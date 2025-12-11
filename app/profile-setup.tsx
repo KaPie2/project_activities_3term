@@ -1,13 +1,17 @@
+// app/profile-setup.tsx
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
   Alert,
+  Dimensions,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
   ScrollView,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
@@ -17,23 +21,67 @@ import {
 import { styles } from "../app/style_template";
 import { db } from "../config/firebase";
 import { useAuth } from '../hooks/useAuth';
+import BackgroundImage from './components/BackgroundImage';
+import GradientButton from './components/GradientButton';
+
+// Импортируем иконки
+const backIcon = require('../assets/images/profile-setup/edit_back.png');
+const ProfileImageIcon = require('../assets/images/profile-setup/profile_image_icon.png');
+const cameraIcon = require('../assets/images/profile-setup/camera_icon.png');
+const firstNameIcon = require('../assets/images/profile-setup/first_name_icon.png');
+const lastNameIcon = require('../assets/images/profile-setup/last_name_icon.png');
+const emailIcon = require('../assets/images/profile-setup/email_icon.png');
+const facultyIcon = require('../assets/images/profile-setup/facualty_icon.png');
+const smileIcon = require('../assets/images/profile-setup/birth_date_icon.png');
+const aboutIcon = require('../assets/images/profile-setup/about_icon.png');
+const skillsIcon = require('../assets/images/profile-setup/skills_icon.png');
+const hobbiesIcon = require('../assets/images/profile-setup/hobbies_icon.png');
+
+// Навыки для выбора
+const skillsOptions = [
+  'JavaScript', 'React', 'TypeScript', 'Node.js', 'Python', 
+  'Java', 'C++', 'HTML/CSS', 'UI/UX Design', 'Figma',
+  'Git', 'SQL', 'MongoDB', 'Firebase', 'AWS'
+];
+
+// Увлечения для выбора
+const hobbiesOptions = [
+  'Настольные игры', 'Чтение', 'Фотография', 'Музыка', 'Спорт',
+  'Путешествия', 'Кино', 'Кулинария', 'Программирование', 'Рисование',
+  'Танцы', 'Йога', 'Велоспорт', 'Походы', 'Игры'
+];
 
 export default function ProfileSetupScreen() {
   const router = useRouter();
   const { user, login } = useAuth();
   const params = useLocalSearchParams();
   const userEmail = params.email as string;
+  
+  const { width, height } = Dimensions.get('window');
+  
+  // Динамические размеры для адаптивности
+  const dynamicFontSize = {
+    small: Math.max(width * 0.035, 12),
+    medium: Math.max(width * 0.04, 14),
+    large: Math.max(width * 0.045, 16),
+    xlarge: Math.max(width * 0.05, 18),
+    xxlarge: Math.max(width * 0.055, 20),
+  };
 
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [faculty, setFaculty] = useState('');
   const [skills, setSkills] = useState('');
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [hobbies, setHobbies] = useState('');
+  const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
   const [bio, setBio] = useState('');
   const [gender, setGender] = useState(''); 
   const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (userEmail) {
@@ -41,13 +89,11 @@ export default function ProfileSetupScreen() {
       setIsEditing(false);
       return;
     } 
-    // Если пользователь авторизован но профиль не заполнен - создание
     if (user && !user.profileCompleted) {
       console.log('Режим СОЗДАНИЯ - пользователь есть, но профиль не заполнен');
       setIsEditing(false);
       return;
     }
-    // Если пользователь уже авторизован и профиль заполнен - редактирование
     else if (user && user.profileCompleted) {
       console.log('Режим РЕДАКТИРОВАНИЯ - профиль заполнен');
       loadUserProfile();
@@ -65,17 +111,32 @@ export default function ProfileSetupScreen() {
       
       if (!profilesSnapshot.empty) {
         const profileData = profilesSnapshot.docs[0].data();
-        setName(profileData.name || '');
+        
+        // Разделяем имя и фамилию
+        const fullName = profileData.name || '';
+        const nameParts = fullName.split(' ');
+        if (nameParts.length > 0) {
+          setFirstName(nameParts[0]);
+          if (nameParts.length > 1) {
+            setLastName(nameParts.slice(1).join(' '));
+          }
+        }
+        
         setFaculty(profileData.faculty || '');
         setSkills(profileData.skills ? profileData.skills.join(', ') : '');
+        setSelectedSkills(profileData.skills || []);
         setHobbies(profileData.hobbies ? profileData.hobbies.join(', ') : '');
+        setSelectedHobbies(profileData.hobbies || []);
         setBio(profileData.bio || '');
         setGender(profileData.gender || '');
         
-        // Загружаем дату рождения если есть
         if (profileData.birthDate) {
           const date = profileData.birthDate.toDate();
           setBirthDate(date);
+        }
+        
+        if (profileData.photoUrl) {
+          setSelectedImage(profileData.photoUrl);
         }
       }
     } catch (error) {
@@ -108,7 +169,6 @@ export default function ProfileSetupScreen() {
     }
     
     if (selectedDate) {
-      // Проверяем что возраст не меньше 16 лет
       const today = new Date();
       const minBirthDate = new Date();
       minBirthDate.setFullYear(today.getFullYear() - 16);
@@ -118,7 +178,6 @@ export default function ProfileSetupScreen() {
         return;
       }
       
-      // Проверяем что возраст не больше 100 лет
       const maxBirthDate = new Date();
       maxBirthDate.setFullYear(today.getFullYear() - 100);
       
@@ -131,11 +190,37 @@ export default function ProfileSetupScreen() {
     }
   };
 
+  const handleSkillSelect = (skill: string) => {
+    if (selectedSkills.includes(skill)) {
+      setSelectedSkills(selectedSkills.filter(s => s !== skill));
+    } else {
+      setSelectedSkills([...selectedSkills, skill]);
+    }
+    // Обновляем текстовое поле
+    const newSkills = selectedSkills.includes(skill) 
+      ? selectedSkills.filter(s => s !== skill)
+      : [...selectedSkills, skill];
+    setSkills(newSkills.join(', '));
+  };
+
+  const handleHobbySelect = (hobby: string) => {
+    if (selectedHobbies.includes(hobby)) {
+      setSelectedHobbies(selectedHobbies.filter(h => h !== hobby));
+    } else {
+      setSelectedHobbies([...selectedHobbies, hobby]);
+    }
+    // Обновляем текстовое поле
+    const newHobbies = selectedHobbies.includes(hobby)
+      ? selectedHobbies.filter(h => h !== hobby)
+      : [...selectedHobbies, hobby];
+    setHobbies(newHobbies.join(', '));
+  };
+
   const handleSaveProfile = async () => {
     setLoading(true);
 
-    if (!name || !faculty || !gender || !birthDate) {
-      Alert.alert("Ошибка", "Заполните все обязательные поля: имя, факультет, пол и дату рождения");
+    if (!firstName || !lastName || !faculty || !gender || !birthDate) {
+      Alert.alert("Ошибка", "Заполните все обязательные поля: имя, фамилия, факультет, пол и дата рождения");
       setLoading(false);
       return;
     }
@@ -154,13 +239,14 @@ export default function ProfileSetupScreen() {
         const profileDoc = profilesSnapshot.docs[0];
       
         await updateDoc(profileDoc.ref, {
-          name: name,
+          name: `${firstName} ${lastName}`.trim(),
           faculty: faculty,
           skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
           hobbies: hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby !== ''),
           bio: bio,
           gender: gender,
-          birthDate: birthDate, 
+          birthDate: birthDate,
+          photoUrl: selectedImage,
           updatedAt: new Date().toISOString(),
         });
 
@@ -190,13 +276,14 @@ export default function ProfileSetupScreen() {
         const profileDoc = profilesSnapshot.docs[0];
 
         await updateDoc(profileDoc.ref, {
-            name: name,
+            name: `${firstName} ${lastName}`.trim(),
             faculty: faculty,
             skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
             hobbies: hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby !== ''),
             bio: bio,
             gender: gender,
             birthDate: birthDate,
+            photoUrl: selectedImage,
             updatedAt: new Date().toISOString(),
         });
 
@@ -222,7 +309,7 @@ export default function ProfileSetupScreen() {
     }
   };
 
-  const handleCancel = () => {
+  const handleBack = () => {
     if (isEditing) {
       router.back();
     } else {
@@ -230,173 +317,351 @@ export default function ProfileSetupScreen() {
     }
   };
 
+  const handleImagePicker = () => {
+    Alert.alert('Выбор фото', 'Функционал загрузки фото будет добавлен позже');
+  };
+
   // Вычисляем возраст если дата рождения установлена
   const age = birthDate ? calculateAge(birthDate) : null;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>
-          {isEditing ? 'Редактировать профиль' : 'Заполните ваш профиль'}
-        </Text>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Имя *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Введите ваше имя"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
+    <BackgroundImage>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      
+      {/* Хэдер с кнопкой назад и заголовком */}
+      <View style={styles.profileHeader}>
+        <TouchableOpacity style={styles.profileBackButton} onPress={handleBack}>
+          <Image 
+            source={backIcon}
+            style={styles.profileBackIcon}
+            resizeMode="contain"
           />
+        </TouchableOpacity>
+        
+        <View style={styles.profileTitleContainer}>
+          <Text style={styles.profileTitleText}>
+            Редактирование профиля
+          </Text>
         </View>
+      </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Факультет *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Введите ваш факультет"
-            value={faculty}
-            onChangeText={setFaculty}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Дата рождения *</Text>
-          <TouchableOpacity 
-            style={[styles.input, { justifyContent: 'center' }]}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={birthDate ? styles.inputText : styles.placeholderText}>
-              {birthDate ? formatDateToDDMMYYYY(birthDate) : 'дд.мм.гггг'}
-            </Text>
-            {age !== null && (
-              <Text style={styles.ageText}>
-                {age} {age === 1 ? 'год' : age < 5 ? 'года' : 'лет'}
-              </Text>
-            )}
-          </TouchableOpacity>
-          
-          {showDatePicker && (
-            <Modal
-              transparent={true}
-              animationType="slide"
-              visible={showDatePicker}
-              onRequestClose={() => setShowDatePicker(false)}
-            >
-              <TouchableWithoutFeedback onPress={() => setShowDatePicker(false)}>
-                <View style={styles.modalOverlay}>
-                  <View style={styles.datePickerContainer}>
-                    <DateTimePicker
-                      value={birthDate || new Date(2000, 0, 1)}
-                      mode="date"
-                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                      onChange={handleDateChange}
-                      maximumDate={new Date()}
-                      minimumDate={new Date(1920, 0, 1)}
-                    />
-                    
-                    {Platform.OS === 'ios' && (
-                      <View style={styles.iosButtons}>
-                        <TouchableOpacity 
-                          style={styles.iosButton} 
-                          onPress={() => setShowDatePicker(false)}
-                        >
-                          <Text style={styles.iosButtonText}>Готово</Text>
-                        </TouchableOpacity>
-                      </View>
-                    )}
-                  </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView 
+          style={styles.profileScrollContainer}
+          contentContainerStyle={styles.profileScrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Аватар с кнопкой загрузки фото */}
+          <View style={styles.profilePhotoSection}>
+            <View style={styles.profileImageContainer}>
+              {selectedImage ? (
+                <Image 
+                  source={{ uri: selectedImage }} 
+                  style={styles.profileImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.profileEmptyImage}>
+                  <Image 
+                    source={ProfileImageIcon}
+                    style={styles.profileImageIcon}
+                    resizeMode="contain"
+                  />
                 </View>
-              </TouchableWithoutFeedback>
-            </Modal>
-          )}
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Пол *</Text>
-          <View style={styles.genderContainer}>
-            <TouchableOpacity 
-              style={styles.genderOption}
-              onPress={() => setGender('male')}
-            >
-              <View style={styles.radioCircle}>
-                {gender === 'male' && <View style={styles.radioSelected} />}
-              </View>
-              <Text style={styles.genderLabel}>Мужской</Text>
-            </TouchableOpacity>
-    
-            <TouchableOpacity 
-              style={styles.genderOption}
-              onPress={() => setGender('female')}
-            >
-              <View style={styles.radioCircle}>
-                {gender === 'female' && <View style={styles.radioSelected} />}
-              </View>
-              <Text style={styles.genderLabel}>Женский</Text>
-            </TouchableOpacity>
+              )}
+              
+              <TouchableOpacity 
+                style={styles.profileAddImageButton}
+                onPress={handleImagePicker}
+              >
+                <View style={styles.profileAddImageGradient}>
+                  <Image 
+                    source={cameraIcon}
+                    style={styles.cameraIcon}
+                    resizeMode="contain"
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.profileImageText}>Нажмите на камеру для загрузки фото</Text>
           </View>
-        </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Навыки</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="JavaScript, React, Figma, Python..."
-            value={skills}
-            onChangeText={setSkills}
-          />
-          <Text style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-            Перечислите навыки через запятую
-          </Text>
-        </View>
+          {/* Личная информация */}
+          <View style={styles.profileSection}>
+            <Text style={styles.sectionTitle}>Личная информация</Text>
+            
+            {/* Имя и Фамилия в одну строку */}
+            <View style={styles.nameRow}>
+              <View style={styles.nameInputContainer}>
+                <Text style={styles.profileInputLabel}>Имя*</Text>
+                <View style={styles.inputWrapperWithIcon}>
+                  <Image source={firstNameIcon} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.profileInput}
+                    placeholder="Иван"
+                    placeholderTextColor="#6472BD"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    autoCapitalize="words"
+                  />
+                </View>
+              </View>
+              
+              <View style={styles.nameInputContainer}>
+                <Text style={styles.profileInputLabel}>Фамилия*</Text>
+                <View style={styles.inputWrapperWithIcon}>
+                  <Image source={lastNameIcon} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.profileInput}
+                    placeholder="Иванов"
+                    placeholderTextColor="#6472BD"
+                    value={lastName}
+                    onChangeText={setLastName}
+                    autoCapitalize="words"
+                  />
+                </View>
+              </View>
+            </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Увлечения</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Фотография, музыка, спорт, путешествия..."
-            value={hobbies}
-            onChangeText={setHobbies}
-          />
-          <Text style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-            Перечислите увлечения через запятую
-          </Text>
-        </View>
+            {/* Пол */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.profileInputLabel}>Пол*</Text>
+              <View style={styles.profileGenderContainer}>
+                <TouchableOpacity 
+                  style={[
+                    styles.profileGenderOption,
+                    gender === 'male' && styles.profileGenderOptionSelectedMale
+                  ]}
+                  onPress={() => setGender('male')}
+                >
+                  <View style={[
+                    styles.radioCircle,
+                    gender === 'male' && styles.radioCircleSelectedMale
+                  ]}>
+                    {gender === 'male' && <View style={styles.radioDotMale} />}
+                  </View>
+                  <Text style={[
+                    styles.genderLabel,
+                    gender === 'male' && styles.profileGenderLabelSelected
+                  ]}>Мужской</Text>
+                </TouchableOpacity>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>О себе</Text>
-          <TextInput
-            style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-            placeholder="Расскажите немного о себе, своих интересах и целях..."
-            value={bio}
-            onChangeText={setBio}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
-        </View>
+                <TouchableOpacity 
+                  style={[
+                    styles.profileGenderOption,
+                    gender === 'female' && styles.profileGenderOptionSelectedFemale
+                  ]}
+                  onPress={() => setGender('female')}
+                >
+                  <View style={[
+                    styles.radioCircle,
+                    gender === 'female' && styles.radioCircleSelectedFemale
+                  ]}>
+                    {gender === 'female' && <View style={styles.radioDotFemale} />}
+                  </View>
+                  <Text style={[
+                    styles.genderLabel,
+                    gender === 'female' && styles.profileGenderLabelSelected
+                  ]}>Женский</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
 
-        <TouchableOpacity 
-          style={[styles.button, loading && styles.buttonDisabled]} 
-          onPress={handleSaveProfile} 
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Сохранение..." : (isEditing ? "Обновить профиль" : "Сохранить профиль")}
-          </Text>
-        </TouchableOpacity>
+            {/* Дата рождения */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.profileInputLabel}>Возраст*</Text>
+              <TouchableOpacity 
+                style={styles.inputWrapperWithIcon}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <Image source={smileIcon} style={styles.inputIcon} />
+                <Text style={birthDate ? styles.profileInputText : styles.profileInputPlaceholder}>
+                  {birthDate ? formatDateToDDMMYYYY(birthDate) : 'дд.мм.гггг'}
+                </Text>
+                {age !== null && (
+                  <Text style={styles.ageText}>
+                    {age} {age === 1 ? 'год' : age < 5 ? 'года' : 'лет'}
+                  </Text>
+                )}
+              </TouchableOpacity>
+              
+              {showDatePicker && (
+                <Modal
+                  transparent={true}
+                  animationType="slide"
+                  visible={showDatePicker}
+                  onRequestClose={() => setShowDatePicker(false)}
+                >
+                  <TouchableWithoutFeedback onPress={() => setShowDatePicker(false)}>
+                    <View style={styles.modalOverlay}>
+                      <View style={styles.datePickerContainer}>
+                        <DateTimePicker
+                          value={birthDate || new Date(2000, 0, 1)}
+                          mode="date"
+                          textColor = '#ffffffff'
+                          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                          onChange={handleDateChange}
+                          maximumDate={new Date()}
+                          minimumDate={new Date(1920, 0, 1)}
+                        />
+                        
+                        {Platform.OS === 'ios' && (
+                          <View style={styles.iosButtons}>
+                            <TouchableOpacity 
+                              style={styles.iosButton} 
+                              onPress={() => setShowDatePicker(false)}
+                            >
+                              <Text style={styles.iosButtonText}>Готово</Text>
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </Modal>
+              )}
+            </View>
 
-        <TouchableOpacity 
-          style={[styles.button, { backgroundColor: '#666', marginTop: 10 }]} 
-          onPress={handleCancel}
-        >
-          <Text style={styles.buttonText}>Отмена</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            {/* Email */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.profileInputLabel}>Email*</Text>
+              <View style={styles.inputWrapperWithIcon}>
+                <Image source={emailIcon} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.profileInput}
+                  placeholder="your.email@omstu.ru"
+                  placeholderTextColor="#6472BD"
+                  value={userEmail || user?.email || ''}
+                  editable={false}
+                />
+              </View>
+            </View>
+
+            {/* Факультет */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.profileInputLabel}>Факультет*</Text>
+              <View style={styles.inputWrapperWithIcon}>
+                <Image source={facultyIcon} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.profileInput}
+                  placeholder="ФИТиКС"
+                  placeholderTextColor="#6472BD"
+                  value={faculty}
+                  onChangeText={setFaculty}
+                />
+              </View>
+            </View>
+
+            <Text style={styles.sectionTitle}>О себе</Text>
+            <View style={styles.bioInputContainer}>
+              <Image source={aboutIcon} style={styles.inputIcon} />
+              <TextInput
+                style={styles.bioInput}
+                placeholder="Расскажите немного о себе, своих интересах и целях..."
+                placeholderTextColor="#6472BD"
+                value={bio}
+                onChangeText={setBio}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+            </View>
+          </View>
+
+          {/* IT-Навыки */}
+          <View style={styles.profileSection}>
+            <View style={styles.profileSkillsHeader}>
+              <Text style={styles.sectionTitle}>IT-Навыки</Text>
+            </View>
+            <Text style={styles.sectionSubtitle}>Выберите навыки которыми владеете</Text>
+            
+            <View style={styles.profileSkillsContainer}>
+              {skillsOptions.map((skill) => (
+                <TouchableOpacity
+                  key={skill}
+                  style={[
+                    styles.profileSkillTag,
+                    selectedSkills.includes(skill) && styles.profileSkillTagSelected
+                  ]}
+                  onPress={() => handleSkillSelect(skill)}
+                >
+                  <Text style={[
+                    styles.profileSkillTagText,
+                    selectedSkills.includes(skill) && styles.profileSkillTagTextSelected
+                  ]}>
+                    {skill}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.profileInputHint}>Добавьте свои навыки (через запятую)</Text>
+            <View style={styles.inputWrapperWithIcon}>
+              <Image source={skillsIcon} style={styles.inputIcon} />
+              <TextInput
+                style={styles.profileInput}
+                placeholder="Например: HTML, CSS, JavaScript"
+                placeholderTextColor="#6472BD"
+                value={skills}
+                onChangeText={setSkills}
+              />
+            </View>
+          </View>
+
+          {/* Увлечения */}
+          <View style={styles.profileSection}>
+            <View style={styles.profileSkillsHeader}>
+              <Text style={styles.sectionTitle}>Увлечения</Text>
+            </View>
+            <Text style={styles.sectionSubtitle}>Выберите ваши интересы и хобби</Text>
+            
+            <View style={styles.profileSkillsContainer}>
+              {hobbiesOptions.map((hobby) => (
+                <TouchableOpacity
+                  key={hobby}
+                  style={[
+                    styles.profileSkillTag,
+                    selectedHobbies.includes(hobby) && styles.profileSkillTagSelected
+                  ]}
+                  onPress={() => handleHobbySelect(hobby)}
+                >
+                  <Text style={[
+                    styles.profileSkillTagText,
+                    selectedHobbies.includes(hobby) && styles.profileSkillTagTextSelected
+                  ]}>
+                    {hobby}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.profileInputHint}>Добавьте свои увлечения (через запятую)</Text>
+            <View style={styles.inputWrapperWithIcon}>
+              <Image source={hobbiesIcon} style={styles.inputIcon} />
+              <TextInput
+                style={styles.profileInput}
+                placeholder="Например: Настольные игры, Чтение"
+                placeholderTextColor="#6472BD"
+                value={hobbies}
+                onChangeText={setHobbies}
+              />
+            </View>
+          </View>
+
+          {/* Кнопка сохранения */}
+          <View style={styles.saveButtonContainer}>
+            <GradientButton
+              title={loading ? "Сохранение..." : "Сохранить"}
+              onPress={handleSaveProfile}
+              loading={loading}
+              disabled={loading}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </BackgroundImage>
   );
 }

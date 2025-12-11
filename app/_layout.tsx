@@ -51,7 +51,7 @@ function RootLayoutContent() {
       <Stack.Screen name="swipe" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false}} />          
       <Stack.Screen name="registration" options={{ headerShown: false }} />
-      <Stack.Screen name="profile-setup" options={{ title: "Профиль" }} />
+      <Stack.Screen name="profile-setup" options={{ headerShown: false}} />
       <Stack.Screen name="profile" options={{ headerShown: false }} />
       <Stack.Screen name="chats" options={{ title: "Чаты" }} />
       <Stack.Screen name="filters" options={{ headerShown: false }} />

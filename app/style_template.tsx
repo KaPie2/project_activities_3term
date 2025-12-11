@@ -24,6 +24,19 @@ const dynamicFontSize = {
     xxlarge: Math.max(width * 0.055, 20),
 };
 
+const dynamicIconSize = {
+    small: Math.max(width * 0.06, 24),
+    medium: Math.max(width * 0.07, 28),
+    large: Math.max(width * 0.08, 32),
+};
+
+const dynamicSpacing = {
+    small: Math.max(width * 0.02, 8),
+    medium: Math.max(width * 0.03, 12),
+    large: Math.max(width * 0.04, 16),
+    xlarge: Math.max(width * 0.05, 20),
+};
+
 export const styles = StyleSheet.create({
     // === ОСНОВНЫЕ СТИЛИ ДЛЯ ЛОГИНА ===
     loginContainer: {
@@ -382,7 +395,7 @@ export const styles = StyleSheet.create({
 
     genderLabel: {
         fontSize: 16,
-        color: '#333',
+        color: '#ffffffff',
     }, 
 
     // === СТИЛИ ДЛЯ ФИЛЬТРОВ (FILTERS) ===
@@ -1165,10 +1178,6 @@ export const styles = StyleSheet.create({
     },
 
     // Стили для даты рождения
-    inputText: {
-        fontSize: 16,
-        color: '#000',
-    },
     placeholderText: {
         fontSize: 16,
         color: '#666',
@@ -1177,7 +1186,7 @@ export const styles = StyleSheet.create({
         position: 'absolute',
         right: 12,
         fontSize: 14,
-        color: '#007AFF',
+        color: '#8090E4',
         fontWeight: '500',
     },
     
@@ -1187,13 +1196,21 @@ export const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'flex-end',
     },
+    
     datePickerContainer: {
-        backgroundColor: 'white',
+        backgroundColor: '#212136ff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         paddingTop: 20,
         paddingBottom: Platform.OS === 'ios' ? 30 : 20,
+        borderColor: '#383957ff',
+        shadowColor: '#ffffffff',
+        shadowOffset: {
+            width: 2,
+            height: 4,
+        },
     },
+
     iosButtons: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
@@ -1202,13 +1219,490 @@ export const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: '#eee',
     },
+
     iosButton: {
         paddingHorizontal: 20,
         paddingVertical: 10,
     },
+
     iosButtonText: {
         fontSize: 16,
         color: '#007AFF',
         fontWeight: '600',
+    },
+
+    profileHeader: {
+        position: 'absolute',
+        top: 5,
+        left: 0,
+        right: 0,
+        height: 100,
+        backgroundColor: 'rgba(0, 2, 10, 0.8)',
+        zIndex: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 44,
+    },
+
+    profileBackButton: {
+        position: 'absolute',
+        left: dynamicSpacing.large,
+        top: 46,
+        zIndex: 11,
+        padding: dynamicSpacing.small
+    },
+
+    profileBackIcon: {
+        width: dynamicIconSize.small * 1.5,
+        height: dynamicIconSize.small * 1.5,
+        tintColor: '#6472BD',
+    },
+
+    profileTitleContainer: {
+        backgroundColor: 'transparent',
+    },
+
+    profileTitleText: {
+        fontSize: dynamicFontSize.large,
+        fontFamily: 'Poppins-Bold',
+        fontWeight: '700',
+        letterSpacing: 0.4,
+        color: '#FFFFFF',
+        textAlign: 'center',
+    },
+
+    profileScrollContainer: {
+        flex: 1,
+        backgroundColor: 'transparent',
+        marginTop: 88,
+    },
+
+    profileScrollContent: {
+        paddingBottom: dynamicSpacing.xlarge * 3,
+        paddingTop: dynamicSpacing.large,
+        paddingHorizontal: dynamicSpacing.large,
+    },
+
+    // Аватар с кнопкой загрузки фото
+    profilePhotoSection: {
+        backgroundColor: 'rgba(49, 52, 86, 0.22)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 20,
+        padding: dynamicSpacing.large,
+        alignItems: 'center',
+        marginBottom: dynamicSpacing.large,
+        marginTop: 10
+    },
+
+    profileImageContainer: {
+        width: width * 0.3,
+        height: width * 0.3,
+        maxWidth: 120,
+        maxHeight: 120,
+        minWidth: 90,
+        minHeight: 90,
+        borderRadius: width * 0.15,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderWidth: 0,
+        borderColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+        marginBottom: dynamicSpacing.medium,
+        opacity: 1,
+        
+    },
+
+    profileImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: width * 0.15,
+    },
+
+    profileEmptyImage: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: width * 0.15, // Совпадает с радиусом контейнера
+        overflow: 'hidden', // Обрезаем иконку по контуру
+    },
+
+    profileImageIcon: {
+        width: '100%',
+        height: '100%',
+        //tintColor: '#6472BD',
+    },
+
+    profileAddImageButton: {
+        position: 'absolute',
+        bottom: dynamicSpacing.small * 0.1,
+        right: dynamicSpacing.small * 0.1,
+        width: dynamicIconSize.medium,
+        height: dynamicIconSize.medium,
+        borderRadius: dynamicIconSize.medium / 2,
+        overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+
+    profileAddImageGradient: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#8090E4',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    cameraIcon: {
+        width: '50%',
+        height: '50%',
+        tintColor: '#FFFFFF',
+    },
+
+    profileImageText: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Medium',
+        fontWeight: '500',
+        letterSpacing: 0.4,
+        textAlign: 'center',
+        opacity: 0.8,
+    },
+
+    profileSection: {
+        backgroundColor: 'rgba(49, 52, 86, 0.22)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 20,
+        padding: dynamicSpacing.large,
+        marginBottom: dynamicSpacing.large,
+    },
+
+    sectionTitle: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.large,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+        marginBottom: dynamicSpacing.medium * 0.4,
+    },
+
+    sectionSubtitle: {
+        color: '#C2CCFF',
+        fontSize: dynamicFontSize.small,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        marginBottom: dynamicSpacing.medium,
+        marginTop: -dynamicSpacing.small * 0.9,
+    },
+
+    profileSkillsHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: dynamicSpacing.small,
+        padding: 0,
+        marginTop: 0,
+    },
+
+    nameRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: dynamicSpacing.medium,
+        marginBottom: dynamicSpacing.large,
+    },
+
+    nameInputContainer: {
+        flex: 1,
+    },
+
+    profileInputContainer: {
+        marginBottom: dynamicSpacing.small,
+    },
+
+    profileInputLabel: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+        marginBottom: dynamicSpacing.small,
+        marginLeft: dynamicSpacing.small,
+    },
+
+    inputWrapperWithIcon: {
+        backgroundColor: 'rgba(49, 52, 86, 0.4)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 10,
+        paddingHorizontal: dynamicSpacing.large,
+        paddingVertical: 0, // Убираем вертикальный padding
+        flexDirection: 'row',
+        alignItems: 'center',
+        minHeight: dynamicIconSize.medium, // Уменьшаем с large на medium
+        height: dynamicIconSize.medium * 1.8, // Фиксированная меньшая высота
+        width: '100%',
+        alignSelf: 'stretch',
+        justifyContent: 'center',
+    },
+
+    inputIcon: {
+        width: dynamicIconSize.small,
+        height: dynamicIconSize.small,
+        marginRight: dynamicSpacing.small,
+        tintColor: '#6472BD',
+        flexShrink: 0,
+        resizeMode: 'contain'
+    },
+
+    profileInput: {
+        flex: 1,
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+        paddingVertical: dynamicSpacing.medium, // Добавляем padding внутрь TextInput
+        paddingHorizontal: 0,
+        textAlignVertical: 'center',
+        includeFontPadding: false,
+        minHeight: dynamicIconSize.large * 1.5,
+    },
+
+    profileInputPlaceholder: {
+        color: '#6472BD',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+        flex: 1,
+    },
+
+    profileInputText: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+        flex: 1,
+    },
+
+    profileAgeText: {
+        fontSize: dynamicFontSize.small,
+        color: '#8090E4',
+        fontFamily: 'Poppins-Medium',
+        fontWeight: '500',
+        marginLeft: dynamicSpacing.small,
+    },
+
+    profileGenderContainer: {
+        flexDirection: 'row',
+        gap: dynamicSpacing.large,
+        marginTop: dynamicSpacing.small,
+        justifyContent: 'space-between',
+    },
+
+    profileGenderOptionSelectedMale: {
+        backgroundColor: 'rgba(49, 52, 86, 0.5)',
+        borderColor: '#4A90E2',
+    },
+
+    profileGenderOptionSelectedFemale: {
+        backgroundColor: 'rgba(49, 52, 86, 0.5)',
+        borderColor: '#E91E63',
+    },
+
+    profileRadioCircleSelectedMale: {
+        borderColor: '#4A90E2',
+    },
+
+    profileRadioCircleSelectedFemale: {
+        borderColor: '#E91E63',
+    },
+
+    profileRadioDot: {
+        width: dynamicIconSize.small * 0.4,
+        height: dynamicIconSize.small * 0.4,
+        borderRadius: (dynamicIconSize.small * 0.4) / 2,
+        backgroundColor: '#8090E4',
+    },
+
+    profileGenderLabel: {
+        color: '#ffffffff',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+    },
+
+    profileGenderLabelSelected: {
+        color: '#FFFFFF',
+        fontWeight: '500',
+    },
+
+    profileBioWrapper: {
+        backgroundColor: 'rgba(49, 52, 86, 0.4)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 10,
+        padding: dynamicSpacing.medium,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        minHeight: width * 0.25,
+    },
+
+    profileBioInput: {
+        flex: 1,
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+        padding: 0,
+        height: width * 0.2,
+        textAlignVertical: 'top',
+    },
+
+    profileSkillsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: dynamicSpacing.small,
+        marginBottom: dynamicSpacing.large,
+    },
+
+    profileSkillTag: {
+        paddingHorizontal: dynamicSpacing.medium,
+        paddingVertical: dynamicSpacing.small,
+        borderRadius: 25,
+        backgroundColor: 'rgba(49, 52, 86, 0.3)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+    },
+
+    profileSkillTagSelected: {
+        backgroundColor: 'rgba(128, 144, 228, 0.3)',
+        borderColor: '#8090E4',
+    },
+
+    profileSkillTagText: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.small,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+    },
+
+    profileSkillTagTextSelected: {
+        color: '#8090E4',
+        //fontWeight: '500',
+    },
+
+    profileInputHint: {
+        color: '#6472BD',
+        fontSize: dynamicFontSize.small,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+        marginBottom: dynamicSpacing.small,
+        marginLeft: dynamicSpacing.small,
+    },
+
+    saveButtonContainer: {
+        alignItems: 'center',
+        marginTop: dynamicSpacing.xlarge,
+        marginBottom: dynamicSpacing.xlarge * 0.4,
+    },
+
+    bioInputContainer: {
+        backgroundColor: 'rgba(49, 52, 86, 0.4)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 10,
+        padding: dynamicSpacing.medium,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        minHeight: width * 0.25,
+    },
+
+    bioInput: {
+        flex: 1,
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+        padding: 0,
+        height: width * 0.2,
+        textAlignVertical: 'top',
+    },
+
+    profileGenderOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: dynamicSpacing.medium,
+        padding: dynamicSpacing.medium,
+        borderRadius: 12,
+        backgroundColor: 'rgba(49, 52, 86, 0.4)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        flex: 1,
+        justifyContent: 'center',
+        marginHorizontal: dynamicSpacing.small,
+        minHeight: dynamicIconSize.large * 1.2,
+    },
+
+    genderOptionSelectedMale: {
+        backgroundColor: 'rgba(49, 52, 86, 0.5)',
+        borderColor: '#4A90E2',
+        borderWidth: 2,
+    },
+
+    genderOptionSelectedFemale: {
+        backgroundColor: 'rgba(49, 52, 86, 0.5)',
+        borderColor: '#E91E63',
+        borderWidth: 2,
+    },
+
+    profileRadioCircle: {
+        width: dynamicIconSize.medium * 0.8,
+        height: dynamicIconSize.medium * 0.8,
+        borderRadius: (dynamicIconSize.medium * 0.8) / 2,
+        borderWidth: 2,
+        borderColor: '#6472BD',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'transparent'
+    },
+
+    radioCircleSelectedMale: {
+        borderColor: '#4A90E2',
+    },
+
+    radioCircleSelectedFemale: {
+        borderColor: '#E91E63',
+    },
+
+    radioDotMale: {
+        width: dynamicIconSize.small * 0.4,
+        height: dynamicIconSize.small * 0.4,
+        borderRadius: (dynamicIconSize.small * 0.4) / 2,
+        backgroundColor: '#4A90E2',
+    },
+
+    radioDotFemale: {
+        width: dynamicIconSize.small * 0.4,
+        height: dynamicIconSize.small * 0.4,
+        borderRadius: (dynamicIconSize.small * 0.4) / 2,
+        backgroundColor: '#E91E63',
+    },
+
+    inputHint: {
+        color: '#C2CCFF',
+        fontSize: dynamicFontSize.small,
+        fontFamily: 'Poppins-Regular',
+        letterSpacing: 0.4,
+        marginBottom: dynamicSpacing.small,
+        marginLeft: dynamicSpacing.small,
     },
 });
