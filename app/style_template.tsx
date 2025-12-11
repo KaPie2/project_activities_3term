@@ -376,12 +376,22 @@ export const styles = StyleSheet.create({
         gap: 8,
     },
 
-    radioCircle: {
+    radioCircleMale: {
         width: 20,
         height: 20,
         borderRadius: 10,
         borderWidth: 2,
         borderColor: '#007AFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    radioCircleFemale: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#E91E63',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -1510,7 +1520,7 @@ export const styles = StyleSheet.create({
 
     profileGenderOptionSelectedMale: {
         backgroundColor: 'rgba(49, 52, 86, 0.5)',
-        borderColor: '#4A90E2',
+        borderColor: '#007AFF',
     },
 
     profileGenderOptionSelectedFemale: {
@@ -1519,7 +1529,7 @@ export const styles = StyleSheet.create({
     },
 
     profileRadioCircleSelectedMale: {
-        borderColor: '#4A90E2',
+        borderColor: '#007AFF',
     },
 
     profileRadioCircleSelectedFemale: {
@@ -1654,7 +1664,7 @@ export const styles = StyleSheet.create({
 
     genderOptionSelectedMale: {
         backgroundColor: 'rgba(49, 52, 86, 0.5)',
-        borderColor: '#4A90E2',
+        borderColor: '#007AFF',
         borderWidth: 2,
     },
 
@@ -1676,7 +1686,7 @@ export const styles = StyleSheet.create({
     },
 
     radioCircleSelectedMale: {
-        borderColor: '#4A90E2',
+        borderColor: '#007AFF',
     },
 
     radioCircleSelectedFemale: {
@@ -1687,7 +1697,7 @@ export const styles = StyleSheet.create({
         width: dynamicIconSize.small * 0.4,
         height: dynamicIconSize.small * 0.4,
         borderRadius: (dynamicIconSize.small * 0.4) / 2,
-        backgroundColor: '#4A90E2',
+        backgroundColor: '#007AFF',
     },
 
     radioDotFemale: {
@@ -1732,7 +1742,7 @@ export const styles = StyleSheet.create({
     profileScreenBackButton: {
         position: 'absolute',
         left: dynamicSpacing.large,
-        top: 35,
+        top: 31,
         zIndex: 11,
         padding: dynamicSpacing.medium,
     },

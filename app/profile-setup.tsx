@@ -438,7 +438,7 @@ export default function ProfileSetupScreen() {
                   onPress={() => setGender('male')}
                 >
                   <View style={[
-                    styles.radioCircle,
+                    styles.radioCircleMale,
                     gender === 'male' && styles.radioCircleSelectedMale
                   ]}>
                     {gender === 'male' && <View style={styles.radioDotMale} />}
@@ -457,7 +457,7 @@ export default function ProfileSetupScreen() {
                   onPress={() => setGender('female')}
                 >
                   <View style={[
-                    styles.radioCircle,
+                    styles.radioCircleFemale,
                     gender === 'female' && styles.radioCircleSelectedFemale
                   ]}>
                     {gender === 'female' && <View style={styles.radioDotFemale} />}
