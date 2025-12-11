@@ -1147,7 +1147,7 @@ export const styles = StyleSheet.create({
 
     // Кнопки для переключения профилей
     showAllButton: {
-        backgroundColor: '#0769d1ff',
+        backgroundColor: '#214b77ff',
         paddingHorizontal: 24,
         paddingVertical: 12,
         borderRadius: 12,
@@ -1704,5 +1704,314 @@ export const styles = StyleSheet.create({
         letterSpacing: 0.4,
         marginBottom: dynamicSpacing.small,
         marginLeft: dynamicSpacing.small,
+    },
+
+        // === СТИЛИ ДЛЯ PROFILE SCREEN ===
+
+    // Основной контейнер
+    profileScreenContainer: {
+        flex: 1,
+        backgroundColor: '#00020A',
+    },
+
+    // Хэдер профиля
+    profileScreenHeader: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 88,
+        backgroundColor: 'rgba(0, 2, 10, 0.8)',
+        zIndex: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 44,
+    },
+
+    profileScreenBackButton: {
+        position: 'absolute',
+        left: dynamicSpacing.large,
+        top: 46,
+        zIndex: 11,
+        padding: dynamicSpacing.small,
+    },
+
+    profileScreenBackIcon: {
+        width: dynamicIconSize.small * 0.55,
+        height: dynamicIconSize.small * 0.35,
+        tintColor: '#FFFFFF',
+    },
+
+    profileScreenTitle: {
+        fontSize: dynamicFontSize.large,
+        fontFamily: 'Poppins-Bold',
+        fontWeight: '700',
+        letterSpacing: 0.4,
+        color: '#FFFFFF',
+        textAlign: 'center',
+    },
+
+    profileScreenEditButton: {
+        position: 'absolute',
+        right: dynamicSpacing.large,
+        top: 46,
+        zIndex: 11,
+        padding: dynamicSpacing.small,
+    },
+
+    profileScreenEditIcon: {
+        width: dynamicIconSize.small,
+        height: dynamicIconSize.small,
+        tintColor: '#8090E4',
+    },
+
+    // Основной контент
+    profileScreenScrollContainer: {
+        flex: 1,
+        backgroundColor: 'transparent',
+        marginTop: 88,
+    },
+
+    profileScreenScrollContent: {
+        paddingBottom: dynamicSpacing.xlarge * 2,
+        paddingTop: dynamicSpacing.large,
+        paddingHorizontal: dynamicSpacing.large,
+    },
+
+    // Аватар секция
+    profileScreenAvatarSection: {
+        backgroundColor: 'rgba(49, 52, 86, 0.22)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 20,
+        padding: dynamicSpacing.large,
+        alignItems: 'center',
+        marginBottom: dynamicSpacing.large,
+    },
+
+    profileScreenAvatarContainer: {
+        width: width * 0.25,
+        height: width * 0.25,
+        maxWidth: 120,
+        maxHeight: 120,
+        minWidth: 90,
+        minHeight: 90,
+        borderRadius: width * 0.125,
+        backgroundColor: 'rgba(49, 52, 86, 0.73)',
+        borderWidth: 3,
+        borderColor: 'rgba(88, 90, 137, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: dynamicSpacing.medium,
+        overflow: 'hidden',
+    },
+
+    profileScreenAvatar: {
+        width: '100%',
+        height: '100%',
+        borderRadius: width * 0.125,
+    },
+
+    profileScreenUserName: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.xlarge,
+        fontFamily: 'Poppins-Bold',
+        fontWeight: '700',
+        letterSpacing: 0.4,
+        marginBottom: dynamicSpacing.small,
+        textAlign: 'center',
+    },
+
+    profileScreenUserEmail: {
+        color: '#6472BD',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Medium',
+        fontWeight: '500',
+        letterSpacing: 0.4,
+        textAlign: 'center',
+    },
+
+    // Секция информации
+    profileScreenInfoSection: {
+        gap: dynamicSpacing.large,
+    },
+
+    profileScreenInfoCard: {
+        backgroundColor: 'rgba(49, 52, 86, 0.22)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 20,
+        padding: dynamicSpacing.large,
+    },
+
+    profileScreenInfoHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: dynamicSpacing.medium,
+        gap: dynamicSpacing.small,
+    },
+
+    profileScreenInfoIcon: {
+        width: dynamicIconSize.small * 0.8,
+        height: dynamicIconSize.small * 0.8,
+        tintColor: '#8090E4',
+        resizeMode: 'contain',
+    },
+
+    profileScreenInfoTitle: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.large,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+    },
+
+    profileScreenInfoValue: {
+        color: '#C2CCFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        lineHeight: dynamicFontSize.medium * 1.4,
+    },
+
+    // Дата рождения и возраст
+    profileScreenBirthDateContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: dynamicSpacing.small,
+    },
+
+    profileScreenBirthDateText: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        flex: 1,
+    },
+
+    profileScreenAgeBadge: {
+        backgroundColor: 'rgba(128, 144, 228, 0.3)',
+        borderWidth: 1,
+        borderColor: '#8090E4',
+        borderRadius: 12,
+        paddingHorizontal: dynamicSpacing.medium,
+        paddingVertical: dynamicSpacing.small,
+        marginLeft: dynamicSpacing.small,
+    },
+
+    profileScreenAgeText: {
+        color: '#8090E4',
+        fontSize: dynamicFontSize.small,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+    },
+
+    // Теги навыков и увлечений
+    profileScreenTagsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: dynamicSpacing.small,
+        marginTop: dynamicSpacing.small,
+    },
+
+    profileScreenSkillTag: {
+        backgroundColor: 'rgba(27, 37, 146, 0.4)',
+        borderWidth: 1,
+        borderColor: '#7c7eb8ff',
+        borderRadius: 20,
+        paddingHorizontal: dynamicSpacing.medium,
+        paddingVertical: dynamicSpacing.small,
+        marginBottom: dynamicSpacing.small,
+    },
+
+    profileScreenSkillText: {
+        color: '#FFFFFF',
+        fontSize: dynamicFontSize.small,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        textAlign: 'center',
+    },
+
+    profileScreenHobbyTag: {
+        backgroundColor: 'rgba(233, 30, 99, 0.2)',
+        borderWidth: 1,
+        borderColor: '#E91E63',
+        borderRadius: 20,
+        paddingHorizontal: dynamicSpacing.medium,
+        paddingVertical: dynamicSpacing.small,
+        marginBottom: dynamicSpacing.small,
+    },
+
+    profileScreenHobbyText: {
+        color: '#FF80AB',
+        fontSize: dynamicFontSize.small,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        textAlign: 'center',
+    },
+
+    // Секция действий
+    profileScreenActionsSection: {
+        marginTop: dynamicSpacing.xlarge,
+        gap: dynamicSpacing.medium,
+    },
+
+    profileScreenEditProfileButton: {
+        backgroundColor: 'rgba(128, 144, 228, 0.3)',
+        borderWidth: 1,
+        borderColor: '#8090E4',
+        borderRadius: 60,
+        paddingVertical: dynamicSpacing.large,
+        paddingHorizontal: dynamicSpacing.xlarge,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: dynamicSpacing.medium,
+    },
+
+    profileScreenEditProfileText: {
+        color: '#8090E4',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+    },
+
+    profileScreenLogoutButton: {
+        backgroundColor: 'rgba(49, 52, 86, 0.3)',
+        borderWidth: 1,
+        borderColor: '#585A89',
+        borderRadius: 60,
+        paddingVertical: dynamicSpacing.large,
+        paddingHorizontal: dynamicSpacing.xlarge,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: dynamicSpacing.medium,
+    },
+
+    profileScreenLogoutText: {
+        color: '#FF6B6B',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-SemiBold',
+        fontWeight: '600',
+        letterSpacing: 0.4,
+    },
+
+    // Нет информации
+    profileScreenNoInfoText: {
+        color: '#6472BD',
+        fontSize: dynamicFontSize.medium,
+        fontFamily: 'Poppins-Regular',
+        fontWeight: '400',
+        letterSpacing: 0.4,
+        fontStyle: 'italic',
     },
 });

@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
@@ -6,16 +5,25 @@ import {
   Alert,
   Image,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
+import { styles } from "../app/style_template";
 import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
+import BackgroundImage from './components/BackgroundImage';
 import LoadingScreen from './components/LoadingScreen';
 
-const defaultAvatar = require('../assets/images/icon.png');
+const backIcon = require('../assets/images/profile/edit_back.png');
+const facultyIcon = require('../assets/images/profile/faculty_icon.png');
+const genderIcon = require('../assets/images/profile/gender_icon.png');
+const birthdayIcon = require('../assets/images/profile/birth_date_icon.png');
+const skillsIcon = require('../assets/images/profile/skills_icon.png');
+const hobbiesIcon = require('../assets/images/profile/hobbies_icon.png');
+const aboutIcon = require('../assets/images/profile/about_icon.png');
+const logoutIcon = require('../assets/images/profile/logout_icon.png');
+const defaultAvatarIcon = require('../assets/images/profile/profile_image_icon.png');
 
 interface UserProfile {
   id: string;
@@ -206,309 +214,189 @@ export default function ProfileScreen() {
   const ageText = getAgeWithDeclension(age);
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Профиль</Text>
-        <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
-          <Ionicons name="create-outline" size={24} color="#007AFF" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Avatar Section */}
-        <View style={styles.avatarSection}>
-          <Image 
-            source={profile.avatar ? { uri: profile.avatar } : defaultAvatar} 
-            style={styles.avatar}
-            defaultSource={defaultAvatar}
-          />
-          <Text style={styles.userName}>{profile.name}</Text>
-          <Text style={styles.userEmail}>{profile.email}</Text>
-        </View>
-
-        {/* Profile Info */}
-        <View style={styles.infoSection}>
-          {/* Faculty */}
-          <View style={styles.infoCard}>
-            <View style={styles.infoHeader}>
-              <Ionicons name="school-outline" size={20} color="#007AFF" />
-              <Text style={styles.infoTitle}>Факультет</Text>
-            </View>
-            <Text style={styles.infoValue}>{profile.faculty || 'Не указан'}</Text>
-          </View>
-
-          {/* Gender */}
-          <View style={styles.infoCard}>
-            <View style={styles.infoHeader}>
-              <Ionicons name="male-female-outline" size={20} color="#007AFF" />
-              <Text style={styles.infoTitle}>Пол</Text>
-            </View>
-            <Text style={styles.infoValue}>{getGenderDisplayText(profile.gender)}</Text>
-          </View>
-
-          {/* Дата рождения */}
-          <View style={styles.infoCard}>
-            <View style={styles.infoHeader}>
-              <Ionicons name="calendar-outline" size={20} color="#007AFF" />
-              <Text style={styles.infoTitle}>Дата рождения</Text>
-            </View>
+    <View style={styles.profileScreenContainer}>
+      <BackgroundImage/>
+        {/* Header с кнопкой назад и редактированием */}
+        <View style={styles.profileScreenHeader}>
+            <TouchableOpacity 
+                style={styles.profileScreenBackButton} 
+                onPress={handleBack}
+            >
+                <Image 
+                    source={backIcon}
+                    style={styles.profileScreenBackIcon}
+                    resizeMode="contain"
+                />
+            </TouchableOpacity>
             
-            {profile.birthDate ? (
-              <View>
-                <Text style={styles.birthDateText}>
-                  {formattedBirthDate}
-                </Text>
+            <Text style={styles.profileScreenTitle}>Профиль</Text>
+        </View>
+
+        <ScrollView 
+            style={styles.profileScreenScrollContainer}
+            contentContainerStyle={styles.profileScreenScrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+            {/* Аватар и основная информация */}
+            <View style={styles.profileScreenAvatarSection}>
+                <View style={styles.profileScreenAvatarContainer}>
+                    <Image 
+                        source={profile.avatar ? { uri: profile.avatar } : defaultAvatarIcon}
+                        style={styles.profileScreenAvatar}
+                        resizeMode="cover"
+                    />
+                </View>
                 
-                {age !== null && (
-                  <View style={styles.ageContainer}>
-                    <View style={styles.ageBadge}>
-                      <Text style={styles.ageBadgeText}>{ageText}</Text>
+                <Text style={styles.profileScreenUserName}>{profile.name}</Text>
+                <Text style={styles.profileScreenUserEmail}>{profile.email}</Text>
+            </View>
+
+            {/* Информация профиля */}
+            <View style={styles.profileScreenInfoSection}>
+                {/* Факультет */}
+                <View style={styles.profileScreenInfoCard}>
+                    <View style={styles.profileScreenInfoHeader}>
+                        <Image 
+                            source={facultyIcon}
+                            style={styles.profileScreenInfoIcon}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.profileScreenInfoTitle}>Факультет</Text>
                     </View>
-                  </View>
-                )}
-              </View>
-            ) : (
-              <Text style={styles.noInfoText}>Не указана</Text>
-            )}
-          </View>
+                    <Text style={styles.profileScreenInfoValue}>
+                        {profile.faculty || 'Не указан'}
+                    </Text>
+                </View>
 
-          {/* Skills */}
-          <View style={styles.infoCard}>
-            <View style={styles.infoHeader}>
-              <Ionicons name="hammer-outline" size={20} color="#007AFF" />
-              <Text style={styles.infoTitle}>Навыки</Text>
+                {/* Пол */}
+                <View style={styles.profileScreenInfoCard}>
+                    <View style={styles.profileScreenInfoHeader}>
+                        <Image 
+                            source={genderIcon}
+                            style={styles.profileScreenInfoIcon}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.profileScreenInfoTitle}>Пол</Text>
+                    </View>
+                    <Text style={styles.profileScreenInfoValue}>
+                        {getGenderDisplayText(profile.gender)}
+                    </Text>
+                </View>
+
+                {/* Дата рождения */}
+                <View style={styles.profileScreenInfoCard}>
+                    <View style={styles.profileScreenInfoHeader}>
+                        <Image 
+                            source={birthdayIcon}
+                            style={styles.profileScreenInfoIcon}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.profileScreenInfoTitle}>Дата рождения</Text>
+                    </View>
+                    
+                    {profile.birthDate ? (
+                        <View style={styles.profileScreenBirthDateContainer}>
+                            <Text style={styles.profileScreenBirthDateText}>
+                                {formattedBirthDate}
+                            </Text>
+                            {age !== null && (
+                                <View style={styles.profileScreenAgeBadge}>
+                                    <Text style={styles.profileScreenAgeText}>
+                                        {ageText}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    ) : (
+                        <Text style={styles.profileScreenNoInfoText}>Не указана</Text>
+                    )}
+                </View>
+
+                {/* Навыки */}
+                <View style={styles.profileScreenInfoCard}>
+                    <View style={styles.profileScreenInfoHeader}>
+                        <Image 
+                            source={skillsIcon}
+                            style={styles.profileScreenInfoIcon}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.profileScreenInfoTitle}>Навыки</Text>
+                    </View>
+                    
+                    {profile.skills && profile.skills.length > 0 ? (
+                        <View style={styles.profileScreenTagsContainer}>
+                            {profile.skills.map((skill, index) => (
+                                <View key={index} style={styles.profileScreenSkillTag}>
+                                    <Text style={styles.profileScreenSkillText}>{skill}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <Text style={styles.profileScreenNoInfoText}>Навыки не указаны</Text>
+                    )}
+                </View>
+
+                {/* Увлечения */}
+                <View style={styles.profileScreenInfoCard}>
+                    <View style={styles.profileScreenInfoHeader}>
+                        <Image 
+                            source={hobbiesIcon}
+                            style={styles.profileScreenInfoIcon}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.profileScreenInfoTitle}>Увлечения</Text>
+                    </View>
+                    
+                    {profile.hobbies && profile.hobbies.length > 0 ? (
+                        <View style={styles.profileScreenTagsContainer}>
+                            {profile.hobbies.map((hobby, index) => (
+                                <View key={index} style={styles.profileScreenHobbyTag}>
+                                    <Text style={styles.profileScreenHobbyText}>{hobby}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <Text style={styles.profileScreenNoInfoText}>Увлечения не указаны</Text>
+                    )}
+                </View>
+
+                {/* О себе */}
+                <View style={styles.profileScreenInfoCard}>
+                    <View style={styles.profileScreenInfoHeader}>
+                        <Image 
+                            source={aboutIcon}
+                            style={styles.profileScreenInfoIcon}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.profileScreenInfoTitle}>О себе</Text>
+                    </View>
+                    <Text style={styles.profileScreenInfoValue}>
+                        {profile.bio || 'Информация о себе не указана'}
+                    </Text>
+                </View>
             </View>
-            {profile.skills && profile.skills.length > 0 ? (
-              <View style={styles.skillsContainer}>
-                {profile.skills.map((skill, index) => (
-                  <View key={index} style={styles.skillTag}>
-                    <Text style={styles.skillText}>{skill}</Text>
-                  </View>
-                ))}
-              </View>
-            ) : (
-              <Text style={styles.noInfoText}>Навыки не указаны</Text>
-            )}
-          </View>
 
-          {/* Hobbies */}
-          <View style={styles.infoCard}>
-            <View style={styles.infoHeader}>
-              <Ionicons name="heart-outline" size={20} color="#007AFF" />
-              <Text style={styles.infoTitle}>Увлечения</Text>
+            {/* Кнопки действий */}
+            <View style={styles.profileScreenActionsSection}>
+                <TouchableOpacity 
+                    style={styles.profileScreenEditProfileButton}
+                    onPress={handleEditProfile}
+                >
+                    <Text style={styles.profileScreenEditProfileText}>Редактировать профиль</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={styles.profileScreenLogoutButton}
+                    onPress={handleLogout}
+                >
+                    <Image 
+                        source={logoutIcon}
+                        style={styles.profileScreenInfoIcon}
+                        resizeMode="contain"
+                    />
+                    <Text style={styles.profileScreenLogoutText}>Выйти</Text>
+                </TouchableOpacity>
             </View>
-            {profile.hobbies && profile.hobbies.length > 0 ? (
-              <View style={styles.skillsContainer}>
-                {profile.hobbies.map((hobby, index) => (
-                  <View key={index} style={styles.hobbyTag}>
-                    <Text style={styles.hobbyText}>{hobby}</Text>
-                  </View>
-                ))}
-              </View>
-            ) : (
-              <Text style={styles.noInfoText}>Увлечения не указаны</Text>
-            )}
-          </View>
-
-          {/* Bio */}
-          <View style={styles.infoCard}>
-            <View style={styles.infoHeader}>
-              <Ionicons name="person-outline" size={20} color="#007AFF" />
-              <Text style={styles.infoTitle}>О себе</Text>
-            </View>
-            <Text style={styles.infoValue}>
-              {profile.bio || 'Информация о себе не указана'}
-            </Text>
-          </View>
-        </View>
-
-        {/* Actions */}
-        <View style={styles.actionsSection}>
-          <TouchableOpacity style={styles.actionButton} onPress={handleEditProfile}>
-            <Ionicons name="create-outline" size={20} color="#007AFF" />
-            <Text style={styles.actionButtonText}>Редактировать профиль</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.actionButton, styles.logoutButton]} onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={20} color="#FF3B30" />
-            <Text style={[styles.actionButtonText, styles.logoutButtonText]}>Выйти</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
     </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 60,
-    paddingBottom: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  editButton: {
-    padding: 8,
-  },
-  scrollContent: {
-    flex: 1,
-  },
-  avatarSection: {
-    alignItems: 'center',
-    paddingVertical: 30,
-    backgroundColor: 'white',
-    marginBottom: 8,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 16,
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 16,
-    color: '#666',
-  },
-  infoSection: {
-    padding: 16,
-  },
-  infoCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  infoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  infoTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginLeft: 8,
-  },
-  // Стиль для отображения даты рождения
-  birthDateText: {
-    fontSize: 16,
-    color: '#444',
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  // Контейнер для возраста
-  ageContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ageBadge: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  ageBadgeText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  infoValue: {
-    fontSize: 16,
-    color: '#444',
-    lineHeight: 22,
-  },
-  skillsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  skillTag: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  skillText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  hobbyTag: {
-    backgroundColor: '#34C759',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  hobbyText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  noInfoText: {
-    fontSize: 16,
-    color: '#999',
-    fontStyle: 'italic',
-  },
-  actionsSection: {
-    padding: 16,
-    gap: 12,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
-  logoutButton: {
-    borderColor: '#FF3B30',
-  },
-  actionButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#007AFF',
-    marginLeft: 12,
-  },
-  logoutButtonText: {
-    color: '#FF3B30',
-  },
-});
+  )};
