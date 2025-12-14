@@ -723,470 +723,479 @@ export const styles = StyleSheet.create({
         elevation: 4,
     },
 
-    // === СТИЛИ ДЛЯ SWIPE ЭКРАНА ===
+// === СТИЛИ ДЛЯ SWIPE ЭКРАНА ===
 
-    swipeContainer: {
-        flex: 1,
-        backgroundColor: 'transparent',
+swipeContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+},
+
+// Верхний прямоугольник 393×61
+rectangleTop: {
+    position: 'absolute',
+    top: 0,
+    left: (Dimensions.get('window').width - 393) / 2,
+    width: 393,
+    height: 61,
+    backgroundColor: 'rgba(0, 2, 10, 0.8)',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 200,
+    borderBottomRightRadius: 200,
+    zIndex: 5,
+},
+// Нижний прямоугольник как изображение (с сохранением пропорций)
+rectangleBottomImage: {
+    position: 'absolute',
+    top: 0,
+    left: -22,
+    right: 0,
+    width: Dimensions.get('window').width + 44,
+    height: 200,
+    zIndex: 4,
+    resizeMode: 'cover', 
+},
+
+// Эффект рассеивания для нижнего прямоугольника
+textureOverlay: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#001230',
+    // Эффект рассеивания через тень
+    shadowColor: '#000',
+    shadowOffset: {
+        width: 0,
+        height: 4,
     },
+    shadowOpacity: 0.5,
+    shadowRadius: 100,
+    elevation: 20,
+},
 
-    swipeContent: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 107,
-    },
+swipeContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 107,
+    zIndex: 10,
+},
 
-    // Новая карточка
-    swipeCard: {
-        position: 'absolute',
-        backgroundColor: '#00020A',
-        width: CARD_WIDTH,
-        height: CARD_HEIGHT,
-        top: CARD_TOP_MARGIN, 
-        left: CARD_HORIZONTAL_MARGIN,
-        borderRadius: 20,
-        overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 5,
-    },
+// Обновленная карточка - центрированная
+swipeCard: {
+    position: 'absolute',
+    backgroundColor: '#00020A',
+    width: 328,
+    height: 548,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+    // Центрирование по x
+    left: (Dimensions.get('window').width - 328) / 2,
+    top: 87,
+    zIndex: 10,
+},
 
-    // Верхняя секция
-    cardTopSection: {
-        width: CARD_WIDTH - 10,
-        height: CARD_HEIGHT * 0.57,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
-        overflow: 'hidden',
-        marginHorizontal: 5,
-        marginTop: 5,
-        position: 'relative',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+// Верхняя секция (фото)
+cardTopSection: {
+    width: 318,
+    height: 312,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    overflow: 'hidden',
+    marginHorizontal: 5,
+    marginTop: 5,
+    position: 'relative',
+},
 
-    cardImage: {
-        width: '100%',
-        height: '106%',
-        resizeMode: 'cover',
-        position: 'absolute', 
-    },
+cardImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+},
 
-    noImageContainer: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#313456',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute', 
-    },
+noImageContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#313456',
+    justifyContent: 'center',
+    alignItems: 'center',
+},
 
-    // Имя и возраст
-    nameAgeContainer: {
-        position: 'absolute',
-        top: CARD_HEIGHT * 0.45,
-        left: 16,
-    },
+// Имя и возраст
+nameAgeContainer: {
+    position: 'absolute',
+    top: 250,
+    left: 16,
+},
 
-    nameAgeText: {
-        color: '#FFFFFF',
-        fontSize: 25,
-        fontFamily: 'Poppins-Medium',
-        fontWeight: '500',
-        lineHeight: 24,
-        textShadowColor: 'rgba(0, 0, 0, 0.7)',
-        textShadowOffset: { width: 0, height: 2 },
-        textShadowRadius: 4,
-    },
+nameAgeText: {
+    color: '#FFFFFF',
+    fontSize: 25,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 24,
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+},
 
-    // Образование
-    educationContainer: {
-        position: 'absolute',
-        top: CARD_HEIGHT * 0.51,
-        left: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-    },
+// Образование
+educationContainer: {
+    position: 'absolute',
+    top: 280,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+},
 
-    educationIcon: {
-        width: 19.61,
-        height: 17.71,
-    },
+educationIcon: {
+    width: 19.61,
+    height: 17.71,
+},
 
-    facultyText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontFamily: 'Poppins-Medium',
-        fontWeight: '500',
-        lineHeight: 20,
-        textShadowColor: 'rgba(0, 0, 0, 0.7)',
-        textShadowOffset: { width: 0, height: 2 },
-        textShadowRadius: 4,
-    },
+facultyText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+},
 
-    // Нижняя секция
-    cardBottomSection: {
-        width: CARD_WIDTH - 10,
-        height: CARD_HEIGHT * 0.4,
-        backgroundColor: 'rgba(49, 52, 86, 0.22)',
-        borderWidth: 1,
-        borderColor: '#585A89',
-        borderTopLeftRadius: 0,
-        borderTopRightRadius: 0,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        marginHorizontal: 5,
-        marginTop: 5,
-    },
+// Нижняя секция
+cardBottomSection: {
+    width: 318,
+    height: 217,
+    backgroundColor: 'rgba(49, 52, 86, 0.22)',
+    borderWidth: 1,
+    borderColor: '#585A89',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginHorizontal: 5,
+    marginTop: 5,
+},
 
-    // Scroll view
-    bottomSectionScroll: {
-        width: '100%',
-        height: CARD_HEIGHT * 0.4, // 🟢 ИЗМЕНЕНО
-    },
+// Scroll view
+bottomSectionScroll: {
+    width: '100%',
+    height: 217,
+},
 
-    bottomSectionContent: {
-        paddingHorizontal: 13,
-        paddingTop: 12,
-        paddingBottom: 20,
-    },
+bottomSectionContent: {
+    paddingHorizontal: 13,
+    paddingTop: 12,
+    paddingBottom: 20,
+},
 
-    // О себе
-    aboutSection: {
-        marginBottom: 7,
-    },
+// О себе
+aboutSection: {
+    marginBottom: 7,
+},
 
-    aboutHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        marginLeft: 0,
-    },
+aboutHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginLeft: 0,
+},
 
-    aboutIcon: {
-        width: 16,
-        height: 20,
-    },
+aboutIcon: {
+    width: 16,
+    height: 20,
+},
 
-    aboutTitle: {
-        color: '#FFFFFF',
-        fontSize: 15,
-        fontFamily: 'Poppins-Medium',
-        fontWeight: '500',
-        lineHeight: 20,
-    },
+aboutTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
+},
 
-    bioText: {
-        color: '#FFFFFF',
-        fontSize: Math.min(width * 0.037, 14), // 🟢 ИЗМЕНЕНО
-        fontFamily: 'Poppins-Medium',
-        fontWeight: '500',
-        lineHeight: 18,
-        marginTop: 8,
-        width: CARD_WIDTH - 30, // 🟢 ИЗМЕНЕНО
-        marginLeft: 0,
-        textAlign: 'left',
-    },
+bioText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 18,
+    marginTop: 8,
+    width: 295,
+    marginLeft: 0,
+    textAlign: 'left',
+},
 
-    // Навыки
-    skillsSection: {
-        marginTop: 7,
-    },
+// Навыки
+skillsSection: {
+    marginTop: 7,
+},
 
-    skillsHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        marginLeft: 0,
-    },
+skillsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginLeft: 0,
+},
 
-    skillsIcon: {
-        width: 18,
-        height: 19.25,
-    },
+skillsIcon: {
+    width: 18,
+    height: 19.25,
+},
 
-    skillsTitle: {
-        color: '#FFFFFF',
-        fontSize: 15,
-        fontFamily: 'Poppins-Medium',
-        fontWeight: '500',
-        lineHeight: 20,
-    },
+skillsTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
+},
 
-    skillsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-        marginTop: 8,
-        marginLeft: 0,
-        paddingRight: 17,
-    },
+skillsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+    marginLeft: 0,
+    paddingRight: 17,
+},
 
-    // Увлечения
-    hobbiesSection: {
-        marginTop: 7,
-    },
+// Увлечения
+hobbiesSection: {
+    marginTop: 7,
+},
 
-    hobbiesHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        marginLeft: 0,
-    },
+hobbiesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginLeft: 0,
+},
 
-    hobbiesIcon: {
-        width: 15.88,
-        height: 19.32,
-    },
+hobbiesIcon: {
+    width: 15.88,
+    height: 19.32,
+},
 
-    hobbiesTitle: {
-        color: '#FFFFFF',
-        fontSize: 15,
-        fontFamily: 'Poppins-Medium',
-        fontWeight: '500',
-        lineHeight: 20,
-    },
+hobbiesTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+    lineHeight: 20,
+},
 
-    hobbiesContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-        marginTop: 8,
-        marginLeft: 0,
-        paddingRight: 17,
-    },
+hobbiesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+    marginLeft: 0,
+    paddingRight: 17,
+},
 
-    // Овальные окошки
-    skillTag: {
-        paddingHorizontal: 15,
-        paddingVertical: 6,
-        height: 31,
-        borderRadius: 25,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
+// Овальные окошки
+skillTag: {
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    height: 31,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+},
 
-    skillText: {
-        color: '#FFFFFF',
-        fontSize: 13,
-        fontFamily: 'Poppins-Regular',
-        fontWeight: '400',
-        lineHeight: 16,
-    },
+skillText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontFamily: 'Poppins-Regular',
+    fontWeight: '400',
+    lineHeight: 16,
+},
 
-    hobbyTag: {
-        paddingHorizontal: 15,
-        paddingVertical: 6,
-        height: 31,
-        borderRadius: 25,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
+hobbyTag: {
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    height: 31,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+},
 
-    hobbyText: {
-        color: '#FFFFFF',
-        fontSize: 13,
-        fontFamily: 'Poppins-Regular',
-        fontWeight: '400',
-        lineHeight: 16,
-    },
+hobbyText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontFamily: 'Poppins-Regular',
+    fontWeight: '400',
+    lineHeight: 16,
+},
 
-    // Кнопки действий
-    actionButtons: {
-        position: 'absolute',
-        top: BUTTONS_BELOW_CARD + 10,
-        left: 0,
-        right: 0,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
+// Обновленные кнопки действий - центрированные
+actionButtons: {
+    position: 'absolute',
+    top: 659,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+},
 
-    dislikeButtonNew: {
-        width: Math.min(width * 0.13, 58),
-        height: Math.min(width * 0.13, 58),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: width * 0.08,
-    },
+dislikeButtonNew: {
+    width: 61,
+    height: 61,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 54,
+},
 
-    likeButtonNew: {
-        width: Math.min(width * 0.16, 70),
-        height: Math.min(width * 0.16, 70),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: width * 0.08, 
-    },
+dislikeIcon: {
+    width: 61,
+    height: 61,
+},
 
-    dislikeIcon: {
-        width: 61,
-        height: 61,
-    },
+likeButtonNew: {
+    width: 74,
+    height: 74,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -6,
+},
 
-    likeIcon: {
-        width: 74,
-        height: 74,
-    },
+likeIcon: {
+    width: 74,
+    height: 74,
+},
 
-    // Нижняя панель
-    bottomPanel: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        width: width,
-        height: Math.max(height * 0.12, 107), // 🟢 ИЗМЕНЕНО (12% от высоты)
-        backgroundColor: 'rgba(0, 2, 10, 0.5)',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        paddingTop: Math.max(height * 0.025, 21), // 🟢 ИЗМЕНЕНО
-        paddingHorizontal: Math.max(width * 0.1, 42), // 🟢 ИЗМЕНЕНО
-        shadowColor: '#000000',
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
-        elevation: 10,
-        overflow: 'hidden',
-    },
+// Нижняя панель
+bottomPanel: {
+    position: 'absolute',
+    bottom: 0,
+    left: 1,
+    right: 1,
+    width: Dimensions.get('window').width - 2,
+    height: 107,
+    backgroundColor: 'rgba(0, 2, 10, 0.5)',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingTop: 21,
+    paddingHorizontal: 42,
+    shadowColor: '#000000',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
+    overflow: 'hidden',
+    zIndex: 20,
+},
 
-    bottomPanelButton: {
-        alignItems: 'center',
-        width: 70,
-    },
+bottomPanelButton: {
+    alignItems: 'center',
+    width: 70,
+},
 
-    bottomPanelIcon: {
-        width: Math.min(width * 0.13, 55), // 🟢 ИЗМЕНЕНО (13% от ширины)
-        height: Math.min(width * 0.13, 55), // 🟢 ИЗМЕНЕНО
-        marginBottom: 8,
-    },
+bottomPanelIcon: {
+    width: 55,
+    height: 55,
+    marginBottom: 8,
+},
 
-    bottomPanelText: {
-        color: '#FFFFFF',
-        fontSize: 12,
-        fontFamily: 'Poppins-SemiBold',
-        fontWeight: '600',
-        textAlign: 'center',
-    },
+bottomPanelText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontWeight: '600',
+    textAlign: 'center',
+},
 
-    centerPanelButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: Math.min(width * 0.15, 64), // 🟢 ИЗМЕНЕНО
-        height: Math.min(width * 0.15, 64), // 🟢 ИЗМЕНЕНО
-        marginTop: -5,
-    },
+centerPanelButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 64,
+    height: 64,
+    marginTop: -5,
+},
 
-    centerPanelIcon: {
-        width: 64,
-        height: 64,
-    },
+centerPanelIcon: {
+    width: 64,
+    height: 64,
+},
 
-    // Индикаторы свайпа
-    likeIndicator: {
-        position: 'absolute',
-        backgroundColor: '#4CD964',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        borderWidth: 3,
-        borderColor: 'white',
-        transform: [{ translateX: width - 100 }, { translateY: 20 }],
-    },
+// Экран "нет больше профилей"
+noMoreContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    marginBottom: 107,
+    zIndex: 10,
+},
 
-    likeText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+noMoreText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 8,
+    textAlign: 'center',
+},
 
-    dislikeIndicator: {
-        position: 'absolute',
-        backgroundColor: '#FF3B30',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        borderWidth: 3,
-        borderColor: 'white',
-        transform: [{ translateX: 20 }, { translateY: 20 }],
-    },
+noMoreSubtext: {
+    fontSize: 16,
+    color: '#6472BD',
+    textAlign: 'center',
+    marginBottom: 16,
+},
 
-    dislikeText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+// Кнопки для переключения профилей
+showAllButton: {
+    backgroundColor: '#63A3F8',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+},
 
-    // Экран "нет больше профилей"
-    noMoreContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-        marginTop: CARD_TOP_MARGIN, 
-        marginBottom: 107,
-    },
+showAllButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+},
 
-    noMoreText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
-        textAlign: 'center',
-    },
+refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E3F2FD',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+},
 
-    noMoreSubtext: {
-        fontSize: 16,
-        color: '#666',
-        textAlign: 'center',
-        marginBottom: 16,
-    },
+refreshButtonText: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+},
 
-    // Кнопки для переключения профилей
-    showAllButton: {
-        backgroundColor: '#214b77ff',
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 12,
-        marginTop: 16,
-    },
 
-    showAllButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-
-    refreshButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#E3F2FD',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 12,
-        marginTop: 16,
-    },
-
-    refreshButtonText: {
-        color: '#007AFF',
-        fontSize: 14,
-        fontWeight: '600',
-        marginLeft: 8,
-    },
-
+//СТИЛИ PROFILE
     // Стили для даты рождения
     placeholderText: {
         fontSize: 16,

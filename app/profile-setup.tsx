@@ -313,7 +313,13 @@ export default function ProfileSetupScreen() {
     if (isEditing) {
       router.back();
     } else {
-      router.replace('/login');
+      // В режиме создания (первого заполнения) не позволяем вернуться назад
+      // Можно оставить пустым или показать предупреждение
+      Alert.alert(
+        "Завершите заполнение профиля",
+        "Пожалуйста, заполните профиль, чтобы продолжить использование приложения.",
+        [{ text: "Понятно", style: "cancel" }]
+      );
     }
   };
 
@@ -328,19 +334,25 @@ export default function ProfileSetupScreen() {
     <BackgroundImage>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
-      {/* Хэдер с кнопкой назад и заголовком */}
+      {/* Хэдер с кнопкой назад и заголовком - ТОЛЬКО В РЕЖИМЕ РЕДАКТИРОВАНИЯ */}
       <View style={styles.profileHeader}>
-        <TouchableOpacity style={styles.profileBackButton} onPress={handleBack}>
-          <Image 
-            source={backIcon}
-            style={styles.profileBackIcon}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
+        {/* Кнопка назад показывается ТОЛЬКО в режиме редактирования */}
+        {isEditing && (
+          <TouchableOpacity style={styles.profileBackButton} onPress={handleBack}>
+            <Image 
+              source={backIcon}
+              style={styles.profileBackIcon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        )}
         
-        <View style={styles.profileTitleContainer}>
+        <View style={[
+          styles.profileTitleContainer,
+          !isEditing && { marginLeft: 0 } // Центрируем заголовок, если нет кнопки назад
+        ]}>
           <Text style={styles.profileTitleText}>
-            Редактирование профиля
+            {isEditing ? 'Редактирование профиля' : 'Создание профиля'}
           </Text>
         </View>
       </View>
