@@ -21,8 +21,9 @@ const educationIcon = require('../assets/images/swipe/education.png');
 const aboutMeIcon = require('../assets/images/swipe/About_me.png');
 const robotIcon = require('../assets/images/swipe/Robot.png');
 const bowlingIcon = require('../assets/images/swipe/Bowling.png');
+const rectangleImage = require('../assets/images/swipe/Rectangle.png');
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
 
 interface Profile {
@@ -49,8 +50,12 @@ export default function SwipeScreen() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [currentUserProfile, setCurrentUserProfile] = useState<Profile | null>(null);
   const [showingMatchedProfiles, setShowingMatchedProfiles] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [visibleCardIndex, setVisibleCardIndex] = useState(0);
   
-  const swipe = useRef(new Animated.ValueXY()).current;
+  const currentCardSwipe = useRef(new Animated.ValueXY()).current;
+  const nextCardOpacity = useRef(new Animated.Value(0)).current;
+  const nextCardScale = useRef(new Animated.Value(0.95)).current;
   const topSectionRef = useRef<View>(null);
 
   useFocusEffect(
@@ -58,13 +63,22 @@ export default function SwipeScreen() {
       loadUserPreferences();
       setRefreshKey(prev => prev + 1);
       setCurrentIndex(0);
+      setVisibleCardIndex(0);
       setShowingMatchedProfiles(true);
+      setIsAnimating(false);
+      currentCardSwipe.setValue({ x: 0, y: 0 });
+      nextCardOpacity.setValue(0);
+      nextCardScale.setValue(0.95);
     }, [user])
   );
   
   useEffect(() => {
     loadUserPreferences();
   }, [user]);
+
+  useEffect(() => {
+    setVisibleCardIndex(currentIndex);
+  }, [currentIndex]);
 
   const loadUserPreferences = async () => {
     if (!user?.email) return;
@@ -213,17 +227,17 @@ export default function SwipeScreen() {
 
       let finalProfiles: Profile[] = [];
       
-      if (showingMatchedProfiles) {
-        // Показываем только подходящие профили
+      if (showingMatchedProfiles && matchedProfiles.length > 0) {
         finalProfiles = matchedProfiles;
-        console.log(`📊 Загружено подходящих профилей: ${matchedProfiles.length}`);
-      } else {
-        // Показываем все неподходящие профили
+      } else if (showingMatchedProfiles && matchedProfiles.length === 0) {
         finalProfiles = otherProfiles;
-        console.log(`📊 Загружено неподходящих профилей: ${otherProfiles.length}`);
+        setShowingMatchedProfiles(false);
+      } else {
+        finalProfiles = [...matchedProfiles, ...otherProfiles];
       }
 
       setCurrentIndex(0);
+      setVisibleCardIndex(0);
       setProfiles(finalProfiles);
       
     } catch (error) {
@@ -233,70 +247,96 @@ export default function SwipeScreen() {
     }
   };
 
-  const handleShowAllProfiles = () => {
-    // Переключаемся на показ неподходящих профилей
-    setShowingMatchedProfiles(false);
-    setRefreshKey(prev => prev + 1);
-    setCurrentIndex(0);
-  };
-
-  const handleRefreshProfiles = () => {
-    // Обновляем профили в текущем режиме
-    setRefreshKey(prev => prev + 1);
-    setCurrentIndex(0);
-  };
+  useEffect(() => {
+    if (showingMatchedProfiles && currentIndex >= profiles.length && profiles.length > 0) {
+      setShowingMatchedProfiles(false);
+      setRefreshKey(prev => prev + 1);
+    }
+  }, [currentIndex, profiles.length, showingMatchedProfiles]);
 
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
+    onStartShouldSetPanResponder: () => !isAnimating,
+    onMoveShouldSetPanResponder: () => !isAnimating,
     onPanResponderMove: (_, gesture) => {
-      swipe.setValue({ x: gesture.dx, y: 0 });
+      currentCardSwipe.setValue({ x: gesture.dx, y: 0 });
     },
     onPanResponderRelease: (_, gesture) => {
       if (gesture.dx > SWIPE_THRESHOLD) {
-        forceSwipe('right');
+        swipeCard('right');
       } else if (gesture.dx < -SWIPE_THRESHOLD) {
-        forceSwipe('left');
+        swipeCard('left');
       } else {
         resetPosition();
       }
     }
   });
 
-  const forceSwipe = (direction: 'right' | 'left') => {
+  const swipeCard = (direction: 'right' | 'left') => {
+    if (isAnimating || currentIndex >= profiles.length) return;
+    
+    setIsAnimating(true);
     const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
     
-    Animated.timing(swipe, {
-      toValue: { x, y: 0 },
-      duration: 250,
-      useNativeDriver: true
-    }).start(() => {
-      onSwipeComplete(direction);
+    // Сразу показываем следующую карточку (но пока еще прозрачную)
+    nextCardOpacity.setValue(0.3);
+    nextCardScale.setValue(0.98);
+    
+    // Анимация ухода текущей карточки
+    Animated.parallel([
+      Animated.timing(currentCardSwipe.x, {
+        toValue: x,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(nextCardOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.spring(nextCardScale, {
+        toValue: 1,
+        friction: 8,
+        useNativeDriver: true,
+      })
+    ]).start(async () => {
+      // Выполняем действие (лайк/дизлайк)
+      const item = profiles[currentIndex];
+      if (direction === 'right') {
+        await handleLike(item);
+      } else {
+        await handleDislike(item);
+      }
+      
+      const isLastProfile = currentIndex === profiles.length - 1;
+      
+      if (isLastProfile) {
+        setCurrentIndex(currentIndex + 1);
+        setVisibleCardIndex(currentIndex + 1);
+        
+        setTimeout(() => {
+          if (showingMatchedProfiles) {
+            setShowingMatchedProfiles(false);
+            setRefreshKey(prev => prev + 1);
+          }
+          setIsAnimating(false);
+        }, 100);
+      } else {
+        // Меняем индексы
+        setCurrentIndex(prev => prev + 1);
+        setVisibleCardIndex(prev => prev + 1);
+        
+        // Сбрасываем анимацию для новой текущей карточки
+        currentCardSwipe.setValue({ x: 0, y: 0 });
+        nextCardOpacity.setValue(0);
+        nextCardScale.setValue(0.95);
+        
+        setIsAnimating(false);
+      }
     });
   };
 
-  const onSwipeComplete = async (direction: 'right' | 'left') => {
-    const item = profiles[currentIndex];
-    
-    if (direction === 'right') {
-      await handleLike(item);
-    } else {
-      await handleDislike(item);
-    }
-
-    swipe.setValue({ x: 0, y: 0 });
-    
-    const isLastProfile = currentIndex === profiles.length - 1;
-    
-    if (isLastProfile) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      setCurrentIndex(prev => prev + 1);
-    }
-  };
-
   const resetPosition = () => {
-    Animated.spring(swipe, {
+    Animated.spring(currentCardSwipe, {
       toValue: { x: 0, y: 0 },
       friction: 5,
       useNativeDriver: true
@@ -428,67 +468,58 @@ export default function SwipeScreen() {
   };
 
   const handleManualLike = () => {
-    forceSwipe('right');
+    swipeCard('right');
   };
 
   const handleManualDislike = () => {
-    forceSwipe('left');
+    swipeCard('left');
   };
 
-  const getCardStyle = () => {
-    const rotate = swipe.x.interpolate({
+  const getCurrentCardStyle = () => {
+    const rotate = currentCardSwipe.x.interpolate({
       inputRange: [-SCREEN_WIDTH * 1.5, 0, SCREEN_WIDTH * 1.5],
-      outputRange: ['-120deg', '0deg', '120deg'],
+      outputRange: ['-30deg', '0deg', '30deg'],
       extrapolate: 'clamp'
     });
 
     return {
       transform: [
-        { translateX: swipe.x },
+        { translateX: currentCardSwipe.x },
+        { translateY: currentCardSwipe.y },
         { rotate }
       ]
     };
   };
 
-  const getCardStackStyle = (index: number) => {
-    const offset = (index - currentIndex) * 10;
-    const scale = 1 - (index - currentIndex) * 0.05;
-    const opacity = index === currentIndex ? 1 : 0.95 - (index - currentIndex) * 0.1;
-
+  const getNextCardStyle = () => {
     return {
+      opacity: nextCardOpacity,
       transform: [
-        { translateY: offset },
-        { scale: scale }
-      ],
-      opacity: opacity,
-      zIndex: profiles.length - index,
+        { scale: nextCardScale }
+      ]
     };
   };
 
   const renderCard = (profile: Profile, index: number) => {
-    if (index < 0 || index >= profiles.length) {
-      return null;
-    }
-
-    if (index < currentIndex) return null;
-
-    const isTopCard = index === currentIndex;
+    if (index !== visibleCardIndex) return null;
     
-    const cardStyle = isTopCard ? getCardStyle() : {};
-    const stackStyle = getCardStackStyle(index);
+    const cardStyle = index === visibleCardIndex ? getCurrentCardStyle() : getNextCardStyle();
 
     return (
       <Animated.View
-        key={profile.id}
+        key={`card-${profile.id}-${index}`}
         style={[
-          styles.swipeCard, 
-          stackStyle,
-          cardStyle
+          styles.swipeCard,
+          cardStyle,
+          { 
+            zIndex: 10,
+            position: 'absolute',
+          }
         ]}
       >
         <View 
           ref={topSectionRef}
-          {...(isTopCard ? panResponder.panHandlers : {})}
+          {...panResponder.panHandlers}
         >
           <View style={styles.cardTopSection}>
             {profile.avatar ? (
@@ -625,69 +656,58 @@ export default function SwipeScreen() {
     );
   }
 
-  // ЭКРАН "НЕТ ПРОФИЛЕЙ" (когда все просмотрены или их вообще нет)
   if (currentIndex >= profiles.length) {
     return (
       <View style={styles.swipeContainer}>
         <BackgroundImage />
         
+        {/* Верхний прямоугольник 393×61 */}
+        <View style={styles.rectangleTop} />
+        
+        {/* Нижний прямоугольник 438×88 - используем изображение */}
+        <Image 
+          source={rectangleImage}
+          style={styles.rectangleBottomImage}
+          resizeMode="stretch"
+        />
+        
         <View style={styles.noMoreContainer}>
-          {profiles.length === 0 ? (
-            // Если профилей вообще нет
-            <>
-              <Text style={styles.noMoreText}>
-                {showingMatchedProfiles ? 
-                  'Нет подходящих под ваши критерии' : 
-                  'Нет доступных профилей'}
-              </Text>
-              <Text style={styles.noMoreSubtext}>
-                {showingMatchedProfiles ? 
-                  'Попробуйте изменить критерии подбора или обновить список' : 
-                  'Попробуйте обновить позже'}
-              </Text>
-            </>
-          ) : (
-            // Если все профили просмотрены
-            <>
-              <Text style={styles.noMoreText}>
-                {showingMatchedProfiles ? 
-                  'Вы просмотрели все подходящие профили' : 
-                  'Вы просмотрели все профили'}
-              </Text>
-              <Text style={styles.noMoreSubtext}>
-                {showingMatchedProfiles ? 
-                  'Хотите посмотреть остальные профили?' : 
-                  'Вы просмотрели все доступные профили'}
-              </Text>
-            </>
-          )}
+          <Text style={styles.noMoreText}>
+            {profiles.length === 0 ? 'Нет доступных профилей' : 'Пока что больше нет профилей'}
+          </Text>
+          <Text style={styles.noMoreSubtext}>
+            {showingMatchedProfiles ? 
+              'Показать все профили, включая неподходящие под критерии?' : 
+              matchCriteria === 'skills' && 'Попробуйте изменить критерии подбора или добавить больше навыков в профиль'}
+            {showingMatchedProfiles ? 
+              '' : 
+              matchCriteria === 'hobbies' && 'Попробуйте изменить критерии подбора или добавить больше увлечений в профиль'}
+            {showingMatchedProfiles ? 
+              '' : 
+              matchCriteria === 'both' && 'Попробуйте изменить критерии подбора или добавить больше навыков и увлечений в профиль'}
+          </Text>
           
           {showingMatchedProfiles ? (
-            // Если в режиме "только подходящие"
-            <>
-              <TouchableOpacity 
-                style={styles.showAllButton} 
-                onPress={handleShowAllProfiles}
-              >
-                <Text style={styles.showAllButtonText}>Показать все профили</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.refreshButton, { marginTop: 10 }]} 
-                onPress={handleRefreshProfiles}
-              >
-                <Ionicons name="refresh" size={20} color="#007AFF" />
-                <Text style={styles.refreshButtonText}>Обновить подходящие</Text>
-              </TouchableOpacity>
-            </>
+            <TouchableOpacity 
+              style={styles.showAllButton} 
+              onPress={() => {
+                setShowingMatchedProfiles(false);
+                setRefreshKey(prev => prev + 1);
+              }}
+            >
+              <Text style={styles.showAllButtonText}>Показать все профили</Text>
+            </TouchableOpacity>
           ) : (
-            // Если в режиме "все профили"
             <TouchableOpacity 
               style={styles.refreshButton} 
-              onPress={handleRefreshProfiles}
+              onPress={() => {
+                setRefreshKey(prev => prev + 1);
+                setCurrentIndex(0);
+                setVisibleCardIndex(0);
+              }}
             >
               <Ionicons name="refresh" size={20} color="#007AFF" />
-              <Text style={styles.refreshButtonText}>Обновить все профили</Text>
+              <Text style={styles.refreshButtonText}>Обновить профили</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -732,18 +752,29 @@ export default function SwipeScreen() {
     );
   }
 
-  // ОСНОВНОЙ ЭКРАН СВАЙПОВ
   return (
     <View style={styles.swipeContainer}>
       <BackgroundImage />
       
+      {/* Верхний прямоугольник 393×61 */}
+      <View style={styles.rectangleTop} />
+      
+      {/* Нижний прямоугольник 438×88 - используем изображение */}
+      <Image 
+        source={rectangleImage}
+        style={styles.rectangleBottomImage}
+        resizeMode="stretch"
+      />
+      
       <View style={styles.swipeContent}>
-        {profiles.map((profile, index) => renderCard(profile, index))}
+        {/* Текущая карточка - только одна */}
+        {renderCard(profiles[visibleCardIndex], visibleCardIndex)}
 
         <View style={styles.actionButtons}>
           <TouchableOpacity 
             style={styles.dislikeButtonNew} 
             onPress={handleManualDislike}
+            disabled={isAnimating}
           >
             <Image 
               source={dislikeIcon}
@@ -755,6 +786,7 @@ export default function SwipeScreen() {
           <TouchableOpacity 
             style={styles.likeButtonNew} 
             onPress={handleManualLike}
+            disabled={isAnimating}
           >
             <Image 
               source={likeIcon}
