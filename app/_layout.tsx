@@ -45,15 +45,31 @@ function RootLayoutContent() {
 }
 
   return (
-    <Stack>
+    <Stack
+      // Глобальные настройки для ВСЕХ экранов
+      screenOptions={{
+        gestureEnabled: false, // выкл свайп-жесты
+        animation: 'slide_from_right',
+        fullScreenGestureEnabled: false, // для iOS
+        animationDuration: 300, // Фиксированная длительность
+      }}
+    >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="swipe" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false}} />          
       <Stack.Screen name="registration" options={{ headerShown: false }} />
-      <Stack.Screen name="profile-setup" options={{ headerShown: false}} />
+      <Stack.Screen name="profile-setup" options={{ headerShown: false }} />
       <Stack.Screen name="profile" options={{ headerShown: false }} />
-      <Stack.Screen name="chats" options={{ title: "Чаты" }} />
+      <Stack.Screen 
+        name="chats" 
+        options={{ 
+          title: "Чаты",
+          gestureEnabled: true,
+          headerShown: true, // вкл заголовок
+          headerBackTitle: "Назад", // Для iOS
+        }} 
+      />
       <Stack.Screen name="filters" options={{ headerShown: false }} />
     </Stack>
   );
