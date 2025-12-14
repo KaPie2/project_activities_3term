@@ -1,3 +1,6 @@
+# Проектная деятельность 3 семестр
+The Dev Divas и Артур
+
 1. Install dependencies
 
    ```bash
