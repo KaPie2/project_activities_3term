@@ -1,4 +1,4 @@
-// hooks/useChat.ts
+
 import {
     addDoc,
     collection,
@@ -18,7 +18,7 @@ export const useChat = (chatId: string) => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  // Real-time подписка на сообщения
+ 
   useEffect(() => {
     if (!chatId || !user?.email) return;
 
@@ -36,7 +36,7 @@ export const useChat = (chatId: string) => {
     return () => unsubscribe();
   }, [chatId, user?.email]);
 
-  // Отправка сообщения
+  
   const sendMessage = async (text: string) => {
     if (!text.trim() || !chatId || !user?.email) return;
 
@@ -44,13 +44,13 @@ export const useChat = (chatId: string) => {
     try {
       const messagesRef = collection(db, 'chats', chatId, 'messages');
       await addDoc(messagesRef, {
-        senderId: user.email, // используем email как идентификатор
+        senderId: user.email,
         text: text.trim(),
         timestamp: serverTimestamp(),
         read: false
       });
       
-      // Обновляем последнее сообщение в чате
+      
       const chatRef = doc(db, 'chats', chatId);
       await updateDoc(chatRef, {
         lastMessage: text.trim(),
